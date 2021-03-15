@@ -236,7 +236,7 @@ public class ShopDetailsActivity extends AppCompatActivity {
 
 
                         }
-                        adapterProductUser = new AdapterProductUser(ShopDetailsActivity.this, productsList);
+                        adapterProductUser = new AdapterProductUser(ShopDetailsActivity.this, productsList,null);
 
                         productsRv.setAdapter(adapterProductUser);
                     }

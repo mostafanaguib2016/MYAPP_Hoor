@@ -1,7 +1,8 @@
 package com.example.myapplication.models;
 
 public class ModelShop {
-    private String uid,email,name,shopName,phone,deliveryFee,latitude,longitude,timestamp,accountType,online,shopOpen,profileImage;
+    private String uid,email,name,shopName,phone,deliveryFee,latitude,
+            longitude,timestamp,accountType,online,shopOpen,profileImage;
 
     public ModelShop() {
 

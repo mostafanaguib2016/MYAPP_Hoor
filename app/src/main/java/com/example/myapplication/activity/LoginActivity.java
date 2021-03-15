@@ -1,6 +1,7 @@
 package com.example.myapplication.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.models.UserModel;
+import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -24,6 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 
@@ -122,13 +131,23 @@ public class LoginActivity extends AppCompatActivity {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("online","true");
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-        ref.child(firebaseAuth.getUid()).updateChildren(hashMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        CollectionReference ref = FirebaseFirestore.getInstance().collection("users");
+        ref.document(firebaseAuth.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                        checkUserType();
+                        ref.whereEqualTo("email",email).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void
+                            onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                                UserModel userModel = value.getDocumentChanges().get(0).getDocument().toObject(UserModel.class);
+                                new UserInfo(LoginActivity.this).setData(userModel);
+                                startActivity(new Intent(LoginActivity.this,MainUserActivity.class));
+                            }
+                        });
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

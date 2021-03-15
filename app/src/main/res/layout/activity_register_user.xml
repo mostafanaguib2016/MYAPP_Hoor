@@ -66,8 +66,21 @@
         android:background="@drawable/shapre_rect02"/>
 
     <EditText
-        android:id="@+id/phoneEt"
+        android:id="@+id/shopNameEt"
         android:layout_below="@+id/nameEt"
+        android:hint="Shop Name"
+        android:padding="10dp"
+        android:drawableStart="@drawable/ic_store_gray"
+        android:drawablePadding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:inputType="textPersonName|textCapWords"
+        android:background="@drawable/shapre_rect02"/>
+
+    <EditText
+        android:id="@+id/phoneEt"
+        android:layout_below="@+id/shopNameEt"
         android:hint="Phone"
         android:padding="10dp"
         android:drawableStart="@drawable/ic_phone_gray"
@@ -78,9 +91,22 @@
         android:inputType="phone"
         android:background="@drawable/shapre_rect02"/>
 
+    <EditText
+        android:id="@+id/deliveryFeeEt"
+        android:layout_below="@+id/phoneEt"
+        android:hint="Delivery Fee"
+        android:padding="10dp"
+        android:drawableStart="@drawable/ic_local_shipping_gray"
+        android:drawablePadding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:inputType="numberDecimal"
+        android:background="@drawable/shapre_rect02"/>
+
     <LinearLayout
         android:layout_margin="5dp"
-        android:layout_below="@+id/phoneEt"
+        android:layout_below="@+id/deliveryFeeEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -89,7 +115,7 @@
 
     <EditText
         android:id="@+id/emailEt"
-        android:layout_below="@+id/phoneEt"
+        android:layout_below="@+id/deliveryFeeEt"
         android:hint="Email"
         android:padding="10dp"
         android:drawableStart="@drawable/ic_mail_gray"
@@ -144,6 +170,8 @@
         android:layout_margin="5dp"
         android:text="Are you a seller? Register as seller"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

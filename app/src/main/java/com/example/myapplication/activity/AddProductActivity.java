@@ -6,6 +6,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -27,17 +29,10 @@ import android.widget.Toast;
 
 import com.example.myapplication.Constants;
 import com.example.myapplication.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.myapplication.models.ModelProduct;
+import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import java.util.HashMap;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -47,6 +42,8 @@ public class AddProductActivity extends AppCompatActivity {
     private TextView categoryTv;
     private Button addProductBtn;
 
+    AddProductViewModel viewModel;
+
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 300;
 
@@ -54,6 +51,7 @@ public class AddProductActivity extends AppCompatActivity {
     private static final int IMAGE_PICK_CAMERA_CODE = 500;
 
     private String[] cameraPermissions;
+    ModelProduct product;
     private String[] storagePermissions;
 
     private Uri image_uri;
@@ -82,6 +80,9 @@ public class AddProductActivity extends AppCompatActivity {
 
         cameraPermissions = new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        viewModel = new ViewModelProvider(this).get(AddProductViewModel.class);
+
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,43 +149,126 @@ public class AddProductActivity extends AppCompatActivity {
 
        final String timestamp = ""+System.currentTimeMillis();
 
+       String productId = firebaseAuth.getUid();
+
         if (image_uri == null){
 
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("productId",""+timestamp);
-            hashMap.put("productTitle",""+productTitle);
-            hashMap.put("productDescription",""+productDescription);
-            hashMap.put("productCategory",""+productCategory);
-            hashMap.put("productQuantity",""+productQuantity);
-            hashMap.put("productIcon","");
-            hashMap.put("originalPrice",""+originalPrice);
-            hashMap.put("timestamp",""+timestamp);
-            hashMap.put("uid",""+firebaseAuth.getUid());
+//            HashMap<String, Object> hashMap = new HashMap<>();
+//            hashMap.put("timeStamp",""+timestamp);
+//            hashMap.put("productTitle",""+productTitle);
+//            hashMap.put("productDescription",""+productDescription);
+//            hashMap.put("productCategory",""+productCategory);
+//            hashMap.put("productQuantity",""+productQuantity);
+//            hashMap.put("productIcon","");
+//            hashMap.put("originalPrice",""+originalPrice);
+//            hashMap.put("timestamp",""+timestamp);
+//            hashMap.put("productId",""+firebaseAuth.getUid());
 
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-            reference.child(firebaseAuth.getUid()).child("Products").child(timestamp).setValue(hashMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
 
-                            progressDialog.dismiss();
-                            Toast.makeText(AddProductActivity.this, "Product added...", Toast.LENGTH_SHORT).show();
-                            clearData();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+            String userId = new  UserInfo(this).getuserId();
 
-                            progressDialog.dismiss();
-                            Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            product = new  ModelProduct(
+                    firebaseAuth.getUid(),productTitle,productDescription,productCategory
+                    ,productQuantity,"",originalPrice,timestamp,userId
+            );
+
+            viewModel.setProductData(product);
+
+            viewModel.getAddProductLiveData().observe(this, new Observer<Task<Void>>() {
+                @Override
+                public void onChanged(Task<Void> task) {
+
+                    if (task.isSuccessful())
+                    {
+                        Toast.makeText(AddProductActivity.this, "Product Added", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent();
+                        intent.putExtra("ADD_PRODUCT",673);
+                        AddProductActivity.this.setResult(RESULT_OK,intent);
+                        AddProductActivity.this.finish();
+                    }
+                    else
+                        Toast.makeText(AddProductActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+
+
+                }
+            });
+
+           /* CollectionReference reference = FirebaseFirestore.getInstance().collection("products");
+
+            reference.document(productId).set(product).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (task.isSuccessful())
+                    {
+                        Toast.makeText(AddProductActivity.this, "Product Added", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent();
+                        intent.putExtra("ADD_PRODUCT",673);
+                        AddProductActivity.this.setResult(RESULT_OK,intent);
+                        AddProductActivity.this.finish();
+                    }
+                    else
+                        Toast.makeText(AddProductActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            });
+*/
+//            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+//            reference.child(firebaseAuth.getUid()).child("Products").child(timestamp).setValue(hashMap)
+//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                        @Override
+//                        public void onSuccess(Void aVoid) {
+//
+//                            progressDialog.dismiss();
+//                            Toast.makeText(AddProductActivity.this, "Product added...", Toast.LENGTH_SHORT).show();
+//                            clearData();
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//
+//                            progressDialog.dismiss();
+//                            Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
 
         }
         else {
 
-            String filePathAndName = "product_image/"+""+timestamp;
+            String userId = new  UserInfo(this).getuserId();
+
+            product = new  ModelProduct(
+                    firebaseAuth.getUid(),productTitle,productDescription,productCategory
+                    ,productQuantity,image_uri.toString(),originalPrice,timestamp,userId
+            );
+
+
+            viewModel.setProductData(product);
+
+            viewModel.getAddProductLiveData().observe(this, new Observer<Task<Void>>() {
+                @Override
+                public void onChanged(Task<Void> task) {
+
+                    if (task.isSuccessful())
+                    {
+                        Toast.makeText(AddProductActivity.this, "Product Added", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent();
+                        intent.putExtra("ADD_PRODUCT",673);
+                        AddProductActivity.this.setResult(RESULT_OK,intent);
+                        AddProductActivity.this.finish();
+                    }
+                    else
+                        Toast.makeText(AddProductActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+
+
+                }
+            });
+
+
+            /*String filePathAndName = "product_image/"+""+timestamp;
 
             StorageReference storageReference = FirebaseStorage.getInstance().getReference(filePathAndName);
             storageReference.putFile(image_uri)
@@ -237,7 +321,7 @@ public class AddProductActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    });
+                    });*/
         }
     }
 
@@ -262,7 +346,6 @@ public class AddProductActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         String category = Constants.productCategories[which];
-
 
                         categoryTv.setText(category);
                     }

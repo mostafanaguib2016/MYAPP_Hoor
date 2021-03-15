@@ -2,14 +2,33 @@ package com.example.myapplication.models;
 
 
 public class ModelProduct {
-    private String productId, productTitle, productDescription,productCategory,productQuantity,productIcon,originalPrice,timestamp,uid;
+    private String productId;
+    private String productTitle;
+    private String productDescription;
+    private String productCategory;
+    private String productQuantity;
+    private String productIcon;
+    private String originalPrice;
+    private String timestamp;
+    private String userId;
+
+    public String getProductIconUrl() {
+        return productIconUrl;
+    }
+
+    public void setProductIconUrl(String productIconUrl) {
+        this.productIconUrl = productIconUrl;
+    }
+
+    private String productIconUrl;
 
     public ModelProduct(){
 
     }
 
-    public ModelProduct (String productId,String productTitle,String productDescription,String productCategory,String productQuantity,String productIcon,
-                         String originalPrice,String timestamp,String uid ){
+    public ModelProduct (String productId,String productTitle,String productDescription
+            ,String productCategory,String productQuantity,String productIcon,
+                         String originalPrice,String timestamp,String userId){
 
         this.productId = productId;
         this.productTitle = productTitle;
@@ -19,8 +38,7 @@ public class ModelProduct {
         this.productIcon = productIcon;
         this.originalPrice = originalPrice;
         this.timestamp = timestamp;
-        this.uid = uid;
-
+        this.userId = userId;
     }
 
     public String getProductId(){
@@ -88,12 +106,12 @@ public class ModelProduct {
         this.timestamp = timestamp;
     }
 
-    public String getUid(){
-        return uid;
+    public String getUserId(){
+        return userId;
     }
 
-    public void setUid(String uid){
-        this.uid = uid;
+    public void setUserId(String uid){
+        this.userId = uid;
     }
 
 }

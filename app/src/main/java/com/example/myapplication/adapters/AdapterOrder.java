@@ -1,7 +1,6 @@
 package com.example.myapplication.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.FilterProductUsers;
 import com.example.myapplication.R;
 import com.example.myapplication.activity.AddProductViewModel;
-import com.example.myapplication.activity.ProductDetailsActivity;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.OrdersModel;
 import com.example.myapplication.util.UserInfo;
@@ -28,14 +26,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.HolderProductUser> implements Filterable {
+public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProductUser> implements Filterable {
 
     private Context context;
-    public ArrayList<ModelProduct> productsList, filterList;
+    public ArrayList<OrdersModel> productsList, filterList;
     private FilterProductUsers filter;
     private AddProductViewModel viewModel;
 
-    public AdapterProductUser(Context context, ArrayList<ModelProduct> productList,AddProductViewModel viewModel){
+    public AdapterOrder(Context context, ArrayList<OrdersModel> productList){
         this.context = context;
         this.productsList = productList;
         this.filterList = productList;
@@ -53,62 +51,24 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
     public void onBindViewHolder(@NonNull HolderProductUser holder, int position) {
 
 
-        ModelProduct modelProduct = productsList.get(position);
+        OrdersModel orderProduct = productsList.get(position);
 
-        String productCategory = modelProduct.getProductCategory();
-        String originalPrice = modelProduct.getOriginalPrice();
-        String productDescription = modelProduct.getProductDescription();
-        String productTitle = modelProduct.getProductTitle();
-        String productQuantity = modelProduct.getProductQuantity();
-        String productId = modelProduct.getProductId();
-        String timestamp = modelProduct.getTimestamp();
-        String productIcon = modelProduct.getProductIcon();
+        String orderTitle = orderProduct.getBuyerName();
+        String originalPrice = orderProduct.getOriginalPrice();
+        String productTitle = orderProduct.getProductTitle();
+        String productId = orderProduct.getProductId();
+        String timestamp = orderProduct.getTimeStamp();
 
-        holder.titleTv.setText(productTitle);
-        holder.descriptionTv.setText(productDescription);
+        holder.titleTv.setText(orderTitle);
+        holder.descriptionTv.setText(productTitle);
         holder.originalPriceTv.setText("$"+originalPrice);
 
 
-        try {
+        holder.addToCartTv.setVisibility(View.GONE);
 
-            Picasso.get().load(productIcon).placeholder(R.drawable.ic_add_shopping_primary).into(holder.productIconIv);
-        }
-        catch (Exception e){
-
-            holder.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
-
-        }
-
-        holder.addToCartTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                UserInfo info = new UserInfo(context);
-
-                OrdersModel model = new OrdersModel(
-                        info.getDeliveryFee(),modelProduct.getUserId(),info.getuserId(),""
-                        ,"",info.getFullName(),info.getPhone(),info.getShopName()
-                        ,timestamp,originalPrice,productId,productTitle
-                );
-
-                viewModel.addOrder(model);
-                viewModel.getAddOrderLiveData().observe((LifecycleOwner) context, new Observer<Task<Void>>() {
-                    @Override
-                    public void onChanged(Task<Void> voidTask) {
-                        if (voidTask.isSuccessful())
-                            Toast.makeText(context, "Order Added", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-            }
-        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(context, ProductDetailsActivity.class);
-                intent.putExtra("productId",productId);
-                context.startActivity(intent);
 
             }
         });
@@ -124,7 +84,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
     @Override
     public Filter getFilter() {
         if (filter == null){
-            filter = new FilterProductUsers(this, filterList);
+//            filter = new FilterProductUsers(this, filterList);
         }
         return filter;
     }

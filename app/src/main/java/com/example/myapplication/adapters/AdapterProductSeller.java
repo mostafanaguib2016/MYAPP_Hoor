@@ -56,7 +56,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
 
            final ModelProduct modelProduct = productList.get(position);
            String id =  modelProduct.getProductId();
-           String uid =  modelProduct.getUid();
+           String uid =  modelProduct.getUserId();
            String productCategory =  modelProduct.getProductCategory();
            String productDescription =  modelProduct.getProductDescription();
            String icon =  modelProduct.getProductIcon();
@@ -107,7 +107,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         TextView originalPriceTv = view.findViewById(R.id.originalPriceTv);
 
         final String id =  modelProduct.getProductId();
-        String uid =  modelProduct.getUid();
+        String uid =  modelProduct.getUserId();
         String productCategory =  modelProduct.getProductCategory();
         String productDescription =  modelProduct.getProductDescription();
         String icon =  modelProduct.getProductIcon();

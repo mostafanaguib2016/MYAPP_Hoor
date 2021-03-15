@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.ProductDetailsActivity">
+
+        <include
+            android:id="@+id/product_tb"
+            layout="@layout/row_product_user"
+            />
+
+        <TextView
+            android:id="@+id/comments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/product_tb"
+            android:background="@color/teal_200"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:text="التعليقات"
+            android:padding="10dp"
+            />
+
+        <ImageView
+            android:id="@+id/add_comment_btn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            app:layout_constraintTop_toTopOf="@id/comments"
+            app:layout_constraintStart_toStartOf="@id/comments"
+            app:layout_constraintBottom_toBottomOf="@id/comments"
+            android:layout_marginHorizontal="15dp"
+            android:src="@drawable/ic_add"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/comments_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/comments"
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/item_comment"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

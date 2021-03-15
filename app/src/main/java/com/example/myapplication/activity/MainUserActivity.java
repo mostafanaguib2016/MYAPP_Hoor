@@ -1,7 +1,9 @@
 package com.example.myapplication.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
@@ -15,10 +17,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activity.chat.MessagesActivity;
+import com.example.myapplication.adapters.AdapterOrder;
+import com.example.myapplication.adapters.AdapterProductSeller;
+import com.example.myapplication.adapters.AdapterProductUser;
 import com.example.myapplication.adapters.AdapterShop;
+import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.ModelShop;
+import com.example.myapplication.models.OrdersModel;
+import com.example.myapplication.util.UserInfo;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +37,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -35,20 +50,31 @@ public class MainUserActivity extends AppCompatActivity {
 
     private TextView nameTv, emailTv, phoneTv, tabShopsTv,tabOrdersTv;
     private RelativeLayout shopsRl, ordersRl;
-    private ImageButton logoutBtn,editProfileBtn;
+    private ImageButton logoutBtn,editProfileBtn,addProductBtn,messageBtn;
     private ImageView profileIv;
-    private RecyclerView shopRv;
+    private RecyclerView shopRv,orderRv;
+
+    AdapterOrder adapterOrder;
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
 
-    private ArrayList<ModelShop> shopList;
-    private AdapterShop adapterShop;
+    UserInfo userInfo;
+
+    AddProductViewModel viewModel;
+
+    private static final int ADD_PRODUCT = 673;
+
+    private ArrayList<ModelProduct> shopList;
+    private ArrayList<OrdersModel> orderList;
+    private AdapterProductUser adapterShop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_user);
+
+        userInfo = new UserInfo(this);
 
         nameTv = findViewById(R.id.nameTv);
         emailTv = findViewById(R.id.emailTv);
@@ -62,6 +88,9 @@ public class MainUserActivity extends AppCompatActivity {
         tabShopsTv = findViewById(R.id.tabShopsTv);
         tabOrdersTv = findViewById(R.id.tabOrdersTv);
         shopRv = findViewById(R.id.shopRv);
+        orderRv = findViewById(R.id.orderRv);
+        addProductBtn = findViewById(R.id.addProductBtn);
+        messageBtn = findViewById(R.id.messageBtn);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please wait");
@@ -69,12 +98,31 @@ public class MainUserActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
 
+        viewModel = new ViewModelProvider(this).get(AddProductViewModel.class);
+
         showShopsUI();
 
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                userInfo.logOut();
                 MakeMeOffline();
+            }
+        });
+
+        addProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult
+                        (new Intent(MainUserActivity.this,AddProductActivity.class),ADD_PRODUCT);
+            }
+        });
+
+        messageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainUserActivity.this, MessagesActivity.class));
             }
         });
 
@@ -86,6 +134,8 @@ public class MainUserActivity extends AppCompatActivity {
 
             }
         });
+
+        tabShopsTv.setText("Products");
 
         tabShopsTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +162,8 @@ public class MainUserActivity extends AppCompatActivity {
 
         tabOrdersTv.setTextColor(getResources().getColor(R.color.white));
         tabOrdersTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+
+        getOrders();
 
     }
 
@@ -166,8 +218,48 @@ public class MainUserActivity extends AppCompatActivity {
         }
     }
 
+    void getOrders(){
+
+        orderList = new ArrayList<>();
+
+        String id = new UserInfo(this).getuserId();
+
+        CollectionReference reference = FirebaseFirestore.getInstance().collection("orders");
+
+        reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
+                    OrdersModel product = snapshot.toObject(OrdersModel.class);
+
+                    if (product.getBuyerId().equals(id)){
+                        orderList.add(product);
+                    }
+
+                }
+                adapterOrder = new AdapterOrder(MainUserActivity.this, orderList);
+                orderRv.setAdapter(adapterOrder);
+            }
+        });
+
+    }
+
     private void loadMyInfo() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+
+        nameTv.setText(userInfo.getFullName());
+        emailTv.setText(userInfo.getEmail());
+        phoneTv.setText(userInfo.getPhone());
+        try {
+            Picasso.get().load(userInfo.getImage()).placeholder(R.drawable.ic_person_gray).into(profileIv);
+        }
+        catch (Exception e){
+
+            profileIv.setImageResource(R.drawable.ic_person_gray);
+        }
+
+        loadShops("");
+
+        /*DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.orderByChild("uid").equalTo(firebaseAuth.getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -202,41 +294,69 @@ public class MainUserActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                });
+                });*/
     }
 
     private void loadShops(final String myCity) {
 
         shopList = new ArrayList<>();
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-        ref.orderByChild("accountType").equalTo("Seller")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        CollectionReference reference = FirebaseFirestore.getInstance().collection("products");
 
-                        shopList.clear();
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            ModelShop modelShop = ds.getValue(ModelShop.class);
+        reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
+                    ModelProduct product = snapshot.toObject(ModelProduct.class);
 
-                            String shopCity = ""+ds.child("city").getValue();
+                    shopList.add(product);
 
-                            if (shopCity.equals(myCity)){
-                                shopList.add(modelShop);
-                            }
+                }
+                adapterShop = new AdapterProductUser(MainUserActivity.this, shopList,viewModel);
+                shopRv.setAdapter(adapterShop);
+            }
+        });
 
-                        }
-
-                        adapterShop = new AdapterShop(MainUserActivity.this, shopList);
-                        shopRv.setAdapter(adapterShop);
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+//        ref.orderByChild("accountType").equalTo("Seller")
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                        shopList.clear();
+//                        for (DataSnapshot ds: snapshot.getChildren()){
+//                            ModelShop modelShop = ds.getValue(ModelShop.class);
+//
+//                            String shopCity = ""+ds.child("city").getValue();
+//
+//                            if (shopCity.equals(myCity)){
+//                                shopList.add(modelShop);
+//                            }
+//
+//                        }
+//
+//                        adapterShop = new AdapterShop(MainUserActivity.this, shopList);
+//                        shopRv.setAdapter(adapterShop);
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode==RESULT_OK){
+
+            if (requestCode == ADD_PRODUCT){
+                loadShops("");
+            }
+        }
+
+    }
 }
