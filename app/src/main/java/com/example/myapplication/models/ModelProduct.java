@@ -12,6 +12,16 @@ public class ModelProduct {
     private String timestamp;
     private String userId;
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    private String userName;
+
     public String getProductIconUrl() {
         return productIconUrl;
     }
@@ -28,7 +38,7 @@ public class ModelProduct {
 
     public ModelProduct (String productId,String productTitle,String productDescription
             ,String productCategory,String productQuantity,String productIcon,
-                         String originalPrice,String timestamp,String userId){
+                         String originalPrice,String timestamp,String userId,String userName){
 
         this.productId = productId;
         this.productTitle = productTitle;
@@ -39,6 +49,7 @@ public class ModelProduct {
         this.originalPrice = originalPrice;
         this.timestamp = timestamp;
         this.userId = userId;
+        this.userName = userName;
     }
 
     public String getProductId(){

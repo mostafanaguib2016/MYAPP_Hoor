@@ -111,13 +111,7 @@ public class MainUserActivity extends AppCompatActivity {
             }
         });
 
-        addProductBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult
-                        (new Intent(MainUserActivity.this,AddProductActivity.class),ADD_PRODUCT);
-            }
-        });
+
 
         messageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,13 +135,39 @@ public class MainUserActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                addProductBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+
+                        intent.putExtra("navigation","product");
+
+                        startActivityForResult
+                                (intent,ADD_PRODUCT);
+                    }
+                });
+
                 showShopsUI();
             }
         });
         tabOrdersTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    showOrdersUI();
+
+                addProductBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+
+                        intent.putExtra("navigation","order");
+
+                        startActivityForResult
+                                (intent,ADD_PRODUCT);
+                    }
+                });
+
+                showOrdersUI();
             }
         });
 
@@ -232,12 +252,9 @@ public class MainUserActivity extends AppCompatActivity {
                 for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
                     OrdersModel product = snapshot.toObject(OrdersModel.class);
 
-                    if (product.getBuyerId().equals(id)){
-                        orderList.add(product);
-                    }
-
+                    orderList.add(product);
                 }
-                adapterOrder = new AdapterOrder(MainUserActivity.this, orderList);
+                adapterOrder = new AdapterOrder(MainUserActivity.this, orderList,viewModel);
                 orderRv.setAdapter(adapterOrder);
             }
         });
@@ -310,9 +327,9 @@ public class MainUserActivity extends AppCompatActivity {
                     ModelProduct product = snapshot.toObject(ModelProduct.class);
 
                     shopList.add(product);
-
                 }
                 adapterShop = new AdapterProductUser(MainUserActivity.this, shopList,viewModel);
+                adapterShop.setData(shopList);
                 shopRv.setAdapter(adapterShop);
             }
         });

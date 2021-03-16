@@ -23,10 +23,14 @@ import com.example.myapplication.activity.ProductDetailsActivity;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.OrdersModel;
 import com.example.myapplication.util.UserInfo;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.HolderProductUser> implements Filterable {
 
@@ -85,20 +89,20 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
                 UserInfo info = new UserInfo(context);
 
-                OrdersModel model = new OrdersModel(
-                        info.getDeliveryFee(),modelProduct.getUserId(),info.getuserId(),""
-                        ,"",info.getFullName(),info.getPhone(),info.getShopName()
-                        ,timestamp,originalPrice,productId,productTitle
-                );
-
-                viewModel.addOrder(model);
-                viewModel.getAddOrderLiveData().observe((LifecycleOwner) context, new Observer<Task<Void>>() {
-                    @Override
-                    public void onChanged(Task<Void> voidTask) {
-                        if (voidTask.isSuccessful())
-                            Toast.makeText(context, "Order Added", Toast.LENGTH_SHORT).show();
-                    }
-                });
+//                OrdersModel model = new OrdersModel(
+//                        info.getDeliveryFee(),modelProduct.getUserId(),info.getuserId(),""
+//                        ,"",info.getFullName(),info.getPhone(),info.getShopName()
+//                        ,timestamp,originalPrice,productId,productTitle
+//                );
+//
+//                viewModel.addOrder(model);
+//                viewModel.getAddOrderLiveData().observe((LifecycleOwner) context, new Observer<Task<Void>>() {
+//                    @Override
+//                    public void onChanged(Task<Void> voidTask) {
+//                        if (voidTask.isSuccessful())
+//                            Toast.makeText(context, "Order Added", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 
             }
         });
@@ -108,7 +112,33 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
                 Intent intent = new Intent(context, ProductDetailsActivity.class);
                 intent.putExtra("productId",productId);
+                intent.putExtra("navigation","product");
                 context.startActivity(intent);
+
+            }
+        });
+
+        holder.deleteIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                CollectionReference db = FirebaseFirestore.getInstance().collection("products");
+
+                db.document(productId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        notifyDataSetChanged();
+                        viewModel.getProducts();
+                        viewModel.getProductsLiveData().observe((LifecycleOwner) context, new Observer<List<ModelProduct>>() {
+                            @Override
+                            public void onChanged(List<ModelProduct> modelProducts) {
+                                setData((ArrayList<ModelProduct>) modelProducts);
+                            }
+                        });
+
+                    }
+                });
 
             }
         });
@@ -131,7 +161,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
     class HolderProductUser extends RecyclerView.ViewHolder{
 
-        private ImageView productIconIv;
+        private ImageView productIconIv,deleteIv;
         private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv;
 
         public HolderProductUser(@NonNull View itemView) {
@@ -142,7 +172,13 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             descriptionTv = itemView.findViewById(R.id.descriptionTv);
             addToCartTv = itemView.findViewById(R.id.addToCartTv);
             originalPriceTv = itemView.findViewById(R.id.originalPriceTv);
+            deleteIv = itemView.findViewById(R.id.deleteBtn);
         }
+    }
+
+    public void setData(ArrayList<ModelProduct> list){
+        this.productsList = list;
+        notifyDataSetChanged();
     }
 
 }

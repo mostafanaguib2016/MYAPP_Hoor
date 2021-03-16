@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.example.myapplication.Constants;
 import com.example.myapplication.R;
 import com.example.myapplication.models.ModelProduct;
+import com.example.myapplication.models.OrdersModel;
 import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +40,7 @@ public class AddProductActivity extends AppCompatActivity {
     private ImageButton backBtn;
     private ImageView productIconIv;
     private EditText titleEt,descriptionEt,quantityEt,priceEt;
-    private TextView categoryTv;
+    private TextView categoryTv,toolbarHeader;
     private Button addProductBtn;
 
     AddProductViewModel viewModel;
@@ -72,6 +73,7 @@ public class AddProductActivity extends AppCompatActivity {
         priceEt = findViewById(R.id.priceEt);
         categoryTv = findViewById(R.id.categoryTv);
         addProductBtn = findViewById(R.id.addProductBtn);
+        toolbarHeader = findViewById(R.id.toolbar_header);
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -83,6 +85,18 @@ public class AddProductActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AddProductViewModel.class);
 
+        String navigation = getIntent().getExtras().getString("navigation");
+
+
+        if (navigation.equals("order"))
+        {
+            toolbarHeader.setText(R.string.add_order);
+            addProductBtn.setText(R.string.add_order);
+        }
+        else {
+            toolbarHeader.setText(R.string.add_product);
+            addProductBtn.setText(R.string.add_product);
+        }
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +125,51 @@ public class AddProductActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                inputData();
+                if (navigation.equals("order"))
+                {
+
+                    progressDialog.setMessage("Adding Order...");
+                    progressDialog.show();
+                    final String timestamp = ""+System.currentTimeMillis();
+                    String userId = new  UserInfo(AddProductActivity.this).getuserId();
+                    String userName = new  UserInfo(AddProductActivity.this).getFullName();
+
+                    productTitle = titleEt.getText().toString().trim();
+                    productDescription = descriptionEt.getText().toString().trim();
+                    productCategory = categoryTv.getText().toString().trim();
+                    productQuantity = quantityEt.getText().toString().trim();
+                    originalPrice = priceEt.getText().toString().trim();
+
+
+                    OrdersModel ordersModel = new OrdersModel(
+                            productTitle,productDescription,productCategory
+                            ,productQuantity, "",originalPrice,timestamp,userId,userName
+                    );
+
+                    viewModel.addOrder(ordersModel);
+                    viewModel.getAddOrderLiveData().observe(AddProductActivity.this, new Observer<Task<Void>>() {
+                        @Override
+                        public void onChanged(Task<Void> voidTask) {
+                            if (voidTask.isSuccessful())
+                            {
+                                progressDialog.dismiss();
+                                Toast.makeText(AddProductActivity.this, "Order Added", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent();
+                                intent.putExtra("ADD_PRODUCT",673);
+                                AddProductActivity.this.setResult(RESULT_OK,intent);
+                                AddProductActivity.this.finish();
+                            }
+                        }
+                    });
+
+                }
+                else {
+
+                    inputData();
+                }
+
+
             }
         });
 
@@ -166,10 +224,11 @@ public class AddProductActivity extends AppCompatActivity {
 
 
             String userId = new  UserInfo(this).getuserId();
+            String userName = new UserInfo(this).getFullName();
 
             product = new  ModelProduct(
                     firebaseAuth.getUid(),productTitle,productDescription,productCategory
-                    ,productQuantity,"",originalPrice,timestamp,userId
+                    ,productQuantity,"",originalPrice,timestamp,userId,userName
             );
 
             viewModel.setProductData(product);
@@ -238,10 +297,10 @@ public class AddProductActivity extends AppCompatActivity {
         else {
 
             String userId = new  UserInfo(this).getuserId();
-
+            String userName = new UserInfo(this).getFullName();
             product = new  ModelProduct(
                     firebaseAuth.getUid(),productTitle,productDescription,productCategory
-                    ,productQuantity,image_uri.toString(),originalPrice,timestamp,userId
+                    ,productQuantity,image_uri.toString(),originalPrice,timestamp,userId,userName
             );
 
 

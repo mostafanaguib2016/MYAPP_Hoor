@@ -30,6 +30,8 @@
         <activity android:name=".activity.ForgotPasswordActivity" />
         <activity android:name=".activity.RegisterUserActivity" />
         <activity android:name=".activity.RegisterSellerActivity" />
+        <activity android:name=".activity.chat.MessagesActivity"/>
+        <activity android:name=".activity.chat.chat.ChatActivity"/>
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>

@@ -1,22 +1,24 @@
 package com.example.myapplication.activity
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.View.GONE
 import android.view.Window
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
-import com.example.myapplication.adapters.AdapterProductUser
+import com.example.myapplication.activity.chat.chat.ChatActivity
 import com.example.myapplication.adapters.CommentsAdapter
 import com.example.myapplication.databinding.ActivityProductDetailsBinding
 import com.example.myapplication.models.CommentModel
 import com.example.myapplication.models.ModelProduct
+import com.example.myapplication.models.OrdersModel
 import com.example.myapplication.util.UserInfo
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -24,6 +26,8 @@ class ProductDetailsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityProductDetailsBinding
     lateinit var list: ArrayList<CommentModel>
+    lateinit var product: ModelProduct
+    lateinit var order : OrdersModel
     lateinit var commentsAdapter: CommentsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,17 +35,59 @@ class ProductDetailsActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_product_details)
 
         val productId = intent.extras!!.getString("productId")!!
+        val navigation = intent.extras!!.getString("navigation")!!
 
-        getProduct(productId)
+        getProduct(productId, navigation)
         commentsAdapter = CommentsAdapter()
 
-        getComments()
+        getComments(productId)
+
+        product = ModelProduct()
+        order = OrdersModel()
+
+        binding.productTb.addToCartTv.visibility = GONE
+        binding.productTb.deleteBtn.visibility = GONE
 
         binding.commentsRv.layoutManager = LinearLayoutManager(this)
         binding.commentsRv.adapter = commentsAdapter
 
         binding.addCommentBtn.setOnClickListener {
             addComment(productId)
+        }
+
+        binding.sendMsg.setOnClickListener {
+
+            if (navigation.equals("product")&& product != null)
+            {
+                val intent = Intent(this, ChatActivity::class.java)
+                intent.putExtra("productId", productId)
+                intent.putExtra("id", product.userId)
+                intent.putExtra("userName", product.userName)
+                startActivity(intent)
+            }
+            else if(navigation.equals("order")&& order != null){
+                val intent = Intent(this, ChatActivity::class.java)
+                intent.putExtra("productId", productId)
+                intent.putExtra("id", order.userId)
+                intent.putExtra("userName", order.userName)
+                startActivity(intent)
+            }
+
+        }
+
+        binding.editProduct.setOnClickListener {
+            if (navigation == "product"){
+                val intent = Intent(this, EditProductActivity::class.java)
+                intent.putExtra("productId", productId)
+                intent.putExtra("navigation", "product")
+                startActivity(intent)
+            }
+            else{
+                val intent = Intent(this, EditProductActivity::class.java)
+                intent.putExtra("productId", productId)
+                intent.putExtra("navigation", "order")
+                startActivity(intent)
+            }
         }
 
     }
@@ -74,6 +120,10 @@ class ProductDetailsActivity : AppCompatActivity() {
             db.collection("comments").document(id).set(commentModel)
                     .addOnCompleteListener {
                         dialog.dismiss()
+
+                        if (it.isSuccessful)
+                            getComments(productId)
+
                     }
         }
 
@@ -82,7 +132,7 @@ class ProductDetailsActivity : AppCompatActivity() {
 
     }
 
-    fun getComments(){
+    fun getComments(productId: String){
         val reference = FirebaseFirestore.getInstance().collection("comments")
 
         val userId = UserInfo(this).getuserId()
@@ -92,7 +142,7 @@ class ProductDetailsActivity : AppCompatActivity() {
             for (snapshot in task.result!!.documents) {
                 val commentModel = snapshot.toObject(CommentModel::class.java)!!
 
-                if (commentModel.userId.equals(userId))
+                if (commentModel.productId.equals(productId))
                 {
                     list.add(commentModel)
                 }
@@ -103,25 +153,46 @@ class ProductDetailsActivity : AppCompatActivity() {
         }
     }
 
-    fun getProduct(productId: String){
+    fun getProduct(productId: String, navigation: String){
 
-        val reference = FirebaseFirestore.getInstance().collection("products")
+        if (navigation.equals("product"))
+        {
+            val reference = FirebaseFirestore.getInstance().collection("products")
 
-        reference.get().addOnCompleteListener { task ->
-            for (snapshot in task.result!!.documents) {
-                val product = snapshot.toObject(ModelProduct::class.java)!!
+            reference.get().addOnCompleteListener { task ->
+                for (snapshot in task.result!!.documents) {
+                    product = snapshot.toObject(ModelProduct::class.java)!!
 
-                if (product.productId.equals(productId))
-                {
-                    binding.productTb.descriptionTv.text = product.productCategory
-                    binding.productTb.originalPriceTv.text= product.originalPrice
-                    binding.productTb.descriptionTv.text = product.productDescription
-                    break
+                    if (product.productId.equals(productId))
+                    {
+                        binding.productTb.titleTv.text = product.productTitle
+                        binding.productTb.originalPriceTv.text= product.originalPrice
+                        binding.productTb.descriptionTv.text = product.productDescription
+                        break
+                    }
+
                 }
-
             }
         }
 
+        else{
+            val reference = FirebaseFirestore.getInstance().collection("orders")
+
+            reference.get().addOnCompleteListener { task ->
+                for (snapshot in task.result!!.documents) {
+                    order = snapshot.toObject(OrdersModel::class.java)!!
+
+                    if (order.orderId.equals(productId))
+                    {
+                        binding.productTb.titleTv.text = order.orderTitle
+                        binding.productTb.originalPriceTv.text= order.originalPrice
+                        binding.productTb.descriptionTv.text = order.orderDescription
+                        break
+                    }
+
+                }
+            }
+        }
 
     }
 

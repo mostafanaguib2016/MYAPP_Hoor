@@ -38,10 +38,33 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/comments_rv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/comments"
-            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginVertical="10dp"
             tools:listitem="@layout/item_comment"
+            />
+
+        <ImageView
+            android:id="@+id/send_msg"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            app:layout_constraintTop_toTopOf="@id/product_tb"
+            app:layout_constraintEnd_toEndOf="@id/product_tb"
+            android:src="@drawable/ic_mail_black"
+            android:elevation="@dimen/_5sdp"
+            android:layout_margin="@dimen/_10sdp"
+            />
+
+        <ImageView
+            android:id="@+id/edit_product"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            app:layout_constraintTop_toTopOf="@id/product_tb"
+            app:layout_constraintEnd_toStartOf="@id/send_msg"
+            android:src="@drawable/ic_edit_black"
+            android:elevation="@dimen/_5sdp"
+            android:layout_margin="@dimen/_10sdp"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

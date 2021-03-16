@@ -2,6 +2,7 @@ package com.example.myapplication.activity.chat.chat
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -21,8 +22,8 @@ class ChatActivity: AppCompatActivity()
     lateinit var list: ArrayList<MessageModel>
 
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
 
         val userId = intent.extras!!.getString("id")!!
@@ -60,7 +61,17 @@ class ChatActivity: AppCompatActivity()
 
             viewModel.addMessage(msgModel)
 
-            chatAdapter.notifyDataSetChanged()
+            viewModel.sendMsgMutableLiveData.observe(this, Observer {
+                if (it.isSuccessful) {
+                    viewModel.showChat(userId, ownerId)
+                    viewModel.messageMutableLiveData.observe(this, Observer {
+                        chatAdapter.setData(it as java.util.ArrayList<MessageModel>)
+                        chatAdapter.notifyDataSetChanged()
+                    })
+                } else
+                    Log.e("TAG", "onCreate: ${it.toString()}", )
+            })
+
             binding.etMessage.text.clear()
 
         }

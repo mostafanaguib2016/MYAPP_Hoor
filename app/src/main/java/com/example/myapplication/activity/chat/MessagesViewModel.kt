@@ -19,7 +19,7 @@ class MessagesViewModel : ViewModel()
     val userMutableLiveData = MutableLiveData<UserModel>()
 
     fun showMessages(userId: String) {
-        db.orderBy("createdAt", Query.Direction.DESCENDING)
+        db.orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener { querySnapshot, _ ->
 
                     val messages = ArrayList<MessageModel>()
@@ -47,7 +47,7 @@ class MessagesViewModel : ViewModel()
     }
 
     fun showChat(ownerId: String,userId: String){
-        db.orderBy("createdAt")
+        db.orderBy("timestamp")
                 .addSnapshotListener { querySnapshot, _ ->
 
                     val messages = ArrayList<MessageModel>()

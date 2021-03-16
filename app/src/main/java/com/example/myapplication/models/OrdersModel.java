@@ -2,54 +2,74 @@ package com.example.myapplication.models;
 
 public class OrdersModel
 {
-    private String id;
-    private String deliveryFee;
-    private String ownerId;
-    private String buyerId;
-    private String latitude;
-    private String longitude;
-    private String buyerName;
-    private String buyerPhone;
-    private String shopName;
-    private String timeStamp;
-    private String productId;
+    private String orderId;
+    private String orderTitle;
+    private String orderDescription;
+    private String orderCategory;
+    private String orderQuantity;
+    private String orderIcon;
     private String originalPrice;
-    private String productTitle;
+    private String timestamp;
+    private String userId;
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public OrdersModel() {
     }
 
-    public OrdersModel(String deliveryFee, String ownerId, String buyerId, String latitude
-            , String longitude, String buyerName, String buyerPhone, String shopName,
-                       String timeStamp, String originalPrice, String productId, String productTitle) {
-        this.deliveryFee = deliveryFee;
-        this.ownerId = ownerId;
-        this.buyerId = buyerId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.buyerName = buyerName;
-        this.buyerPhone = buyerPhone;
-        this.shopName = shopName;
-        this.timeStamp = timeStamp;
-        this.productId = productId;
-        this.originalPrice = originalPrice;
-        this.productTitle = productTitle;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public String getProductTitle() {
-        return productTitle;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public void setProductTitle(String productTitle) {
-        this.productTitle = productTitle;
+    public String getOrderTitle() {
+        return orderTitle;
     }
 
-    public String getProductId() {
-        return productId;
+    public void setOrderTitle(String orderTitle) {
+        this.orderTitle = orderTitle;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public String getOrderDescription() {
+        return orderDescription;
+    }
+
+    public void setOrderDescription(String orderDescription) {
+        this.orderDescription = orderDescription;
+    }
+
+    public String getOrderCategory() {
+        return orderCategory;
+    }
+
+    public void setOrderCategory(String orderCategory) {
+        this.orderCategory = orderCategory;
+    }
+
+    public String getOrderQuantity() {
+        return orderQuantity;
+    }
+
+    public void setOrderQuantity(String orderQuantity) {
+        this.orderQuantity = orderQuantity;
+    }
+
+    public String getOrderIcon() {
+        return orderIcon;
+    }
+
+    public void setOrderIcon(String orderIcon) {
+        this.orderIcon = orderIcon;
     }
 
     public String getOriginalPrice() {
@@ -60,83 +80,33 @@ public class OrdersModel
         this.originalPrice = originalPrice;
     }
 
-    public String getId() {
-        return id;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public String getDeliveryFee() {
-        return deliveryFee;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setDeliveryFee(String deliveryFee) {
-        this.deliveryFee = deliveryFee;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getBuyerId() {
-        return buyerId;
-    }
-
-    public void setBuyerId(String buyerId) {
-        this.buyerId = buyerId;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getBuyerName() {
-        return buyerName;
-    }
-
-    public void setBuyerName(String buyerName) {
-        this.buyerName = buyerName;
-    }
-
-    public String getBuyerPhone() {
-        return buyerPhone;
-    }
-
-    public void setBuyerPhone(String buyerPhone) {
-        this.buyerPhone = buyerPhone;
-    }
-
-    public String getShopName() {
-        return shopName;
-    }
-
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
-    }
-
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public OrdersModel( String orderTitle, String orderDescription, String orderCategory
+            , String orderQuantity, String orderIcon, String originalPrice
+            , String timestamp, String userId,String userName) {
+        this.orderTitle = orderTitle;
+        this.orderDescription = orderDescription;
+        this.orderCategory = orderCategory;
+        this.orderQuantity = orderQuantity;
+        this.orderIcon = orderIcon;
+        this.originalPrice = originalPrice;
+        this.timestamp = timestamp;
+        this.userId = userId;
+        this.userName = userName;
     }
 }
