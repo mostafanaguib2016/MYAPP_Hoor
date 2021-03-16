@@ -168,6 +168,12 @@ class ProductDetailsActivity : AppCompatActivity() {
                         binding.productTb.titleTv.text = product.productTitle
                         binding.productTb.originalPriceTv.text= product.originalPrice
                         binding.productTb.descriptionTv.text = product.productDescription
+
+                        val ownerID = product.userId
+                        val userId = UserInfo(this).getuserId()
+
+                        if (ownerID != userId)
+                            binding.editProduct.visibility = GONE
                         break
                     }
 
@@ -187,6 +193,13 @@ class ProductDetailsActivity : AppCompatActivity() {
                         binding.productTb.titleTv.text = order.orderTitle
                         binding.productTb.originalPriceTv.text= order.originalPrice
                         binding.productTb.descriptionTv.text = order.orderDescription
+
+                        val ownerID = order.userId
+                        val userId = UserInfo(this).getuserId()
+
+                        if (ownerID != userId)
+                            binding.editProduct.visibility = GONE
+
                         break
                     }
 

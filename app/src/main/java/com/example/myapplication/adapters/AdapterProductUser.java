@@ -67,6 +67,12 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         String productId = modelProduct.getProductId();
         String timestamp = modelProduct.getTimestamp();
         String productIcon = modelProduct.getProductIcon();
+        String ownerId = modelProduct.getUserId();
+
+        String userId = new UserInfo(context).getuserId();
+
+        if (!userId.equals(ownerId))
+            holder.deleteIv.setVisibility(View.GONE);
 
         holder.titleTv.setText(productTitle);
         holder.descriptionTv.setText(productDescription);

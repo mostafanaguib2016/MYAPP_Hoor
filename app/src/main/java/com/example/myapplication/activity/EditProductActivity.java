@@ -29,6 +29,7 @@ import com.example.myapplication.Constants;
 import com.example.myapplication.R;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.OrdersModel;
+import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -161,6 +162,7 @@ public class EditProductActivity extends AppCompatActivity {
                             categoryTv.setText(order.getOrderCategory());
                             quantityEt.setText(order.getOrderQuantity());
                             priceEt.setText(order.getOriginalPrice());
+
                             break;
                         }
 
@@ -192,7 +194,7 @@ public class EditProductActivity extends AppCompatActivity {
 
                     for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
                         product = snapshot.toObject(ModelProduct.class);
-                        if (order.getOrderId().equals(productId)){
+                        if (product.getProductId().equals(productId)){
                             titleEt.setText(product.getProductTitle());
                             descriptionEt.setText(product.getProductDescription());
                             categoryTv.setText(product.getProductCategory());

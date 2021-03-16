@@ -67,6 +67,12 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
         holder.titleTv.setText(orderTitle);
         holder.descriptionTv.setText(productTitle);
         holder.originalPriceTv.setText("$"+originalPrice);
+        String ownerId = orderProduct.getUserId();
+
+        String userId = new UserInfo(context).getuserId();
+
+        if (!userId.equals(ownerId))
+            holder.deleteIv.setVisibility(View.GONE);
 
 
         holder.addToCartTv.setVisibility(View.GONE);
