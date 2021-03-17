@@ -59,17 +59,27 @@ class ProductDetailsActivity : AppCompatActivity() {
 
             if (navigation.equals("product")&& product != null)
             {
+
+                val userId = UserInfo(this).getuserId()
+                val userName = UserInfo(this).getFullName()
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.putExtra("productId", productId)
                 intent.putExtra("id", product.userId)
-                intent.putExtra("userName", product.userName)
+                intent.putExtra("ownerName", product.userName)
+                intent.putExtra("userId",userId)
+                intent.putExtra("userName",userName)
+
                 startActivity(intent)
             }
             else if(navigation.equals("order")&& order != null){
+                val userId = UserInfo(this).getuserId()
+                val userName = UserInfo(this).getFullName()
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.putExtra("productId", productId)
-                intent.putExtra("id", order.userId)
-                intent.putExtra("userName", order.userName)
+                intent.putExtra("id", product.userId)
+                intent.putExtra("ownerName", product.userName)
+                intent.putExtra("userId",userId)
+                intent.putExtra("userName",userName)
                 startActivity(intent)
             }
 

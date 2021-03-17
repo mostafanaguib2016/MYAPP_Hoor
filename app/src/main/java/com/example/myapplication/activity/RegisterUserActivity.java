@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.UserModel;
+import com.example.myapplication.util.MyUtil;
 import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -364,10 +365,12 @@ public class RegisterUserActivity extends AppCompatActivity {
 //
 //                                });
 
-                        String filePathAndName = "profile_images/" + ""+firebaseAuth.getUid();
+
+                        String filePathAndName = MyUtil.Companion.getRandomName() + ".jpg";
+                        Uri uri = Uri.fromFile(new File(String.valueOf(image_uri.getPath())));
 
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference(filePathAndName);
-                        storageReference.putFile(Uri.fromFile(new File(image_uri.getPath())))
+                        storageReference.putFile(uri)
                                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

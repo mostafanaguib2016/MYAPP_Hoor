@@ -35,7 +35,7 @@ class MessagesViewModel : ViewModel()
                         val list = ArrayList<MessageModel>()
 
                         for (i in messages.indices){
-                            if (messages[i].ownerId == userId)
+                            if (messages[i].receiverId == userId || messages[i].senderId == userId)
                                 list.add(messages[i])
                         }
                         Log.e("SIZE",list.size.toString() + "   ")
@@ -63,7 +63,8 @@ class MessagesViewModel : ViewModel()
                         val list = ArrayList<MessageModel>()
 
                         for (i in messages.indices){
-                            if (messages[i].ownerId == ownerId && messages[i].userId == userId)
+                            if ((messages[i].senderId == ownerId || messages[i].receiverId == ownerId)
+                                    && (messages[i].senderId == userId || messages[i].receiverId == userId))
                                 list.add(messages[i])
                         }
                         Log.e("SIZE",list.size.toString() + "   ")

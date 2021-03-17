@@ -2,9 +2,7 @@ package com.example.myapplication.activity.chat
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +10,7 @@ import com.example.myapplication.R
 import com.example.myapplication.activity.chat.chat.ChatActivity
 import com.example.myapplication.databinding.ItemMessagesBinding
 import com.example.myapplication.models.MessageModel
+import com.example.myapplication.util.UserInfo
 import com.squareup.picasso.Picasso
 
 class MessageAdapter(val context: Context): RecyclerView.Adapter<MessageAdapter.ViewHolder>()
@@ -47,11 +46,21 @@ class MessageAdapter(val context: Context): RecyclerView.Adapter<MessageAdapter.
             binding.userName.text = currentItem.userName
             binding.message.text = currentItem.message
 
+
+
             binding.root.setOnClickListener{
+
                 val userId = currentItem.userId
+                val userName = currentItem.userName
+                val ownerId = currentItem.ownerId
                 val bundle = Intent(context,ChatActivity::class.java)
-                bundle.putExtra("id",userId)
-                bundle.putExtra("userName",currentItem.userName)
+                bundle.putExtra("id",ownerId)
+                bundle.putExtra("ownerName",currentItem.ownerName)
+                bundle.putExtra("userId",userId)
+                bundle.putExtra("userName",userName)
+
+
+
                 context.startActivity(bundle)
             }
 

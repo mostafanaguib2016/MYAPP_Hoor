@@ -40,21 +40,26 @@ class MessagesActivity: AppCompatActivity()
         viewModel.messageMutableLiveData.observe(this, Observer {
 
 
-            val size = it.size-2
-
-            list.add(it[0])
-            for (i in 0..size)
-            {
-                if (it[i+1].userId != it[i].userId)
-                    list.add(it[i])
-            }
-            adapter.setData(list)
-
-
             Log.e("TAG", "onCreateMesage: ${it.size}")
 
-            if (list.isEmpty())
+
+
+            if (it.isEmpty())
                 binding.noData.visibility = VISIBLE
+            else
+            {
+                val size = it.size-2
+
+                list.add(it[0])
+                for (i in 0..size)
+                {
+                    if (it[i+1].userId != it[i].userId)
+                        list.add(it[i])
+                }
+
+                Log.e("MESSAGES s", "${list[list.size-1].toString()}    ")
+                adapter.setData(list)
+            }
 
         })
 

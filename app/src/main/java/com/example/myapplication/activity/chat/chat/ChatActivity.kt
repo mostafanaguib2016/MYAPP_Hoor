@@ -1,7 +1,6 @@
 package com.example.myapplication.activity.chat.chat
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -26,10 +25,12 @@ class ChatActivity: AppCompatActivity()
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
 
-        val userId = intent.extras!!.getString("id")!!
-        val userName = intent.extras!!.getString("userName")!!
-        val ownerId = UserInfo(this).getuserId()
-        val ownerName = UserInfo(this).getFullName()
+        val ownerId = intent.extras!!.getString("id")!!
+        val ownerName = intent.extras!!.getString("ownerName")!!
+        val userId = intent.extras!!.getString("userId")!!
+        val userName = intent.extras!!.getString("userName")
+
+        Log.e("TAG IDs", "onCreate: $ownerId  $userId")
 
         chatAdapter = ChatAdapter(this)
         viewModel = ViewModelProvider.NewInstanceFactory().create(MessagesViewModel::class.java)
@@ -46,16 +47,26 @@ class ChatActivity: AppCompatActivity()
 
             val timestamp = "" + System.currentTimeMillis()
 
+            if (ownerId == UserInfo(this).getuserId())
+            {
+                msgModel.senderId = ownerId
+                msgModel.senderName = ownerName
+                msgModel.receiverId = userId
+                msgModel.receiverName = userName
+            }
+            else
+            {
+                msgModel.senderId = userId
+                msgModel.senderName = userName
+                msgModel.receiverId = ownerId
+                msgModel.receiverName = ownerName
+            }
 
             msgModel.message = binding.etMessage.text.toString()
             msgModel.ownerId = ownerId
             msgModel.ownerName = ownerName
             msgModel.userId = userId
             msgModel.userName = userName
-            msgModel.senderId = ownerId
-            msgModel.senderName = ownerName
-            msgModel.receiverId = userId
-            msgModel.receiverName = userName
             msgModel.timestamp = timestamp
             msgModel.userImage = ""
 
