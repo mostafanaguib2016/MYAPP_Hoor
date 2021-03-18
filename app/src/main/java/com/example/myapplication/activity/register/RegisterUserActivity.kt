@@ -3,13 +3,13 @@ package com.example.myapplication.activity.register
 import android.Manifest
 import android.app.Activity
 import android.app.ProgressDialog
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
@@ -26,6 +26,7 @@ import com.example.myapplication.R
 import com.example.myapplication.activity.MainUserActivity
 import com.example.myapplication.activity.RegisterViewModel
 import com.example.myapplication.models.UserModel
+import com.example.myapplication.util.ImageHelper
 import com.example.myapplication.util.MyUtil
 import com.example.myapplication.util.UserInfo
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore.InstanceRegistry
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class RegisterUserActivity: AppCompatActivity()
@@ -49,6 +52,9 @@ class RegisterUserActivity: AppCompatActivity()
     private lateinit var deliverFeeEt:EditText
     private lateinit var registerBtn: Button
     private lateinit var registerSellerTv: TextView
+    private lateinit var mImageBitmap: Bitmap
+    private lateinit var mCurrentPhotoPath: String
+    private lateinit var mImageView: ImageView
 
     val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1
 
@@ -106,7 +112,7 @@ class RegisterUserActivity: AppCompatActivity()
         progressDialog!!.setTitle("Please wait")
         progressDialog!!.setCanceledOnTouchOutside(false)
         backBtn!!.setOnClickListener(View.OnClickListener { onBackPressed() })
-        profileIv!!.setOnClickListener(View.OnClickListener { showImagePickDialog() })
+        profileIv!!.setOnClickListener(View.OnClickListener { ImageHelper.captureImage(this) })
         registerBtn!!.setOnClickListener(View.OnClickListener { inputData() })
 //        registerSellerTv.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -199,8 +205,8 @@ class RegisterUserActivity: AppCompatActivity()
                 if (it.isSuccessful) {
                     Log.e("REG Activity", "onChanged: IF")
                     viewModel.setUserData(userModel)
-                    viewModel.userInfoMutableLiveData.observe(this@RegisterUserActivity, { voidTask ->
-                        if (voidTask.isSuccessful) {
+                    viewModel.userInfoMutableLiveData.observe(this@RegisterUserActivity, Observer{
+                        if (it.isSuccessful) {
                             val intent = Intent(this@RegisterUserActivity, MainUserActivity::class.java)
                             progressDialog!!.dismiss()
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -209,9 +215,9 @@ class RegisterUserActivity: AppCompatActivity()
                         } else {
                             Log.e("REG Activity", "onChanged: error")
                             Log.e("REG Activity", "onChanged: else"
-                                    + voidTask.exception!!.localizedMessage)
+                                    + it.exception!!.localizedMessage)
                             progressDialog!!.dismiss()
-                            Toast.makeText(this@RegisterUserActivity, voidTask.result.toString(), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@RegisterUserActivity, it.result.toString(), Toast.LENGTH_SHORT).show()
                         }
                     })
                 } else {
@@ -298,16 +304,16 @@ class RegisterUserActivity: AppCompatActivity()
                                     viewModel!!.sendData(userModel!!)
                                     viewModel.userInfoMutableLiveData.observe(
                                             this, Observer {
-                                                if (it.isSuccessful)
-                                                {
-                                                    userInfo.setData(userModel)
-                                                    progressDialog!!.dismiss()
-                                                    startActivity(
-                                                            Intent(
-                                                                    this,MainUserActivity::class.java
-                                                            )
+                                        if (it.isSuccessful)
+                                        {
+                                            userInfo.setData(userModel)
+                                            progressDialog!!.dismiss()
+                                            startActivity(
+                                                    Intent(
+                                                            this,MainUserActivity::class.java
                                                     )
-                                                }
+                                            )
+                                        }
                                     }
                                     )
                                 }
@@ -331,7 +337,7 @@ class RegisterUserActivity: AppCompatActivity()
         builder.setTitle("Pick Image")
                 .setItems(options) { dialog, which ->
                     if (which == 0) {
-                       isStoragePermissionGranted(CAMERA_REQUEST_CODE)
+                        isStoragePermissionGranted(CAMERA_REQUEST_CODE)
                     } else {
                         isStoragePermissionGranted(STORAGE_REQUEST_CODE)
                     }
@@ -346,14 +352,40 @@ class RegisterUserActivity: AppCompatActivity()
     }
 
     private fun pickFromCamera() {
-        val contentValues = ContentValues()
-        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title")
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description")
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (cameraIntent.resolveActivity(packageManager) != null) {
+            // Create the File where the photo should go
+            var photoFile: File? = null
+            try {
+                photoFile = createImageFile()
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                Log.e("TAG", "IOException")
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile))
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
+            }
+        }
+    }
 
-//        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
-        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
+    @Throws(IOException::class)
+    private fun createImageFile(): File? {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir: File = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",  // suffix
+                storageDir // directory
+        )
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.absolutePath
+        return image
     }
 
     private fun checkStoragePermission(): Boolean {
@@ -491,8 +523,8 @@ class RegisterUserActivity: AppCompatActivity()
 
         if (Activity.RESULT_OK == resultCode) {
 
-//            when (requestCode) {
-//                STORAGE_REQUEST_CODE -> {
+            when (requestCode) {
+                STORAGE_REQUEST_CODE -> {
                     image_uri = try {
                         profileIv.setImageURI(data!!.data!!)
                         uri = data.data!!
@@ -516,11 +548,19 @@ class RegisterUserActivity: AppCompatActivity()
                         Log.e("URI Catch", "  " + data!!.dataString!!)
                         MyUtil.bitMapToString((data.extras!!["data"] as Bitmap))
                     }
-//                }
-//            }
+                }
+
+                CAMERA_REQUEST_CODE ->{
+                    try {
+                        mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                        mImageView.setImageBitmap(mImageBitmap);
+                    } catch (e : IOException) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
         }
-
     }
-
 
 }

@@ -27,6 +27,7 @@ class MessagesActivity: AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_messages)
+        adapter = MessageAdapter(this)
 
         viewModel = ViewModelProvider.NewInstanceFactory().create(MessagesViewModel::class.java)
 
@@ -42,6 +43,7 @@ class MessagesActivity: AppCompatActivity()
 
             Log.e("TAG", "onCreateMesage: ${it.size}")
 
+            list = ArrayList()
 
 
             if (it.isEmpty())
@@ -53,7 +55,7 @@ class MessagesActivity: AppCompatActivity()
                 list.add(it[0])
                 for (i in 0..size)
                 {
-                    if (it[i+1].userId != it[i].userId)
+                    if (it[i+1].senderId != it[i].senderId || it[i+1].receiverId != it[i].receiverId)
                         list.add(it[i])
                 }
 
@@ -63,7 +65,6 @@ class MessagesActivity: AppCompatActivity()
 
         })
 
-        adapter = MessageAdapter(this)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter

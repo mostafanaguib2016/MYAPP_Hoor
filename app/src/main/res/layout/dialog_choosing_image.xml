@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/place_layout"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimary"
+    android:layout_height="220dp"
+    android:padding="32dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp">
+        <RelativeLayout
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/camera_layout"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="16dp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/camera_imageView"
+                    android:src="@drawable/ic_camera_white"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+
+                <TextView
+                    android:layout_below="@+id/camera_imageView"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:text="Camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+
+            </RelativeLayout>
+            <TextView
+                android:layout_toStartOf="@+id/gallery_layout"
+                android:layout_toEndOf="@+id/camera_layout"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="Or"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <RelativeLayout
+                android:id="@+id/gallery_layout"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/gallery_imageView"
+                    android:src="@drawable/ic_gallery"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+
+                <TextView
+                    android:layout_below="@+id/gallery_imageView"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:text="Gallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
