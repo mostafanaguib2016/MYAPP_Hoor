@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activity.register.RegisterUserActivity;
 import com.example.myapplication.models.UserModel;
 import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnFailureListener;

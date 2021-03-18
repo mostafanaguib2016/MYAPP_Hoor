@@ -383,6 +383,20 @@ public class RegisterUserActivity extends AppCompatActivity {
 
                                             userModel.setProfileImage(downloadImageUri.toString());
                                             viewModel.sendData(userModel);
+                                            viewModel.getUserInfoMutableLiveData().observe(
+                                                    RegisterUserActivity.this, new Observer<Task<Void>>() {
+                                                @Override
+                                                public void onChanged(Task<Void> voidTask) {
+                                                    if (voidTask.isSuccessful())
+                                                    {
+                                                        progressDialog.dismiss();
+                                                        userInfo.setData(userModel);
+                                                        startActivity(new Intent(
+                                                                RegisterUserActivity.this,MainUserActivity.class
+                                                        ));
+                                                    }
+                                                }
+                                            });
                                         }
                                     }
                                 })

@@ -11,12 +11,20 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/fdg"
         android:label="@string/app_name"
         android:roundIcon="@drawable/fdg"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
         <activity android:name=".activity.ProductDetailsActivity"/>
@@ -33,6 +41,7 @@
         <activity android:name=".activity.chat.MessagesActivity"/>
         <activity android:name=".activity.chat.chat.ChatActivity"/>
         <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.register.RegisterUserActivity"/>
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
