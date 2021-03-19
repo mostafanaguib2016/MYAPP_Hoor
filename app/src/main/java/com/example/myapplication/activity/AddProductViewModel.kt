@@ -24,13 +24,20 @@ class AddProductViewModel: ViewModel()
     val deleteProductLiveData = MutableLiveData<Task<Void>>()
     val ordersLiveData = MutableLiveData<List<OrdersModel>>()
 
-    private val mStorageRefUser = FirebaseStorage.getInstance().getReference("product_image")
+    private val mStorageRefUser = FirebaseStorage.getInstance().getReference("products")
+    private val mStorageRefOrder = FirebaseStorage.getInstance().getReference("orders")
 
     private var mAuth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
 
     fun setProductData(modelProduct: ModelProduct) {
+
+        val db = FirebaseFirestore.getInstance()
+
+        val id = db.collection("products").document().id
+        modelProduct.productId = id
+
 
         if (modelProduct.productIcon.isNotEmpty()) {
 
@@ -74,6 +81,7 @@ class AddProductViewModel: ViewModel()
 
             mStorageRefUser.child(imageName).putFile(file)
                     .continueWithTask {
+                        Log.e("TAG Order", "addOrder: ${mStorageRefUser.child(imageName).downloadUrl}" )
                         mStorageRefUser.child(imageName).downloadUrl
                     }.addOnSuccessListener {
 

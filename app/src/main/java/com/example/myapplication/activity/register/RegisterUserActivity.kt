@@ -3,13 +3,12 @@ package com.example.myapplication.activity.register
 import android.Manifest
 import android.app.Activity
 import android.app.ProgressDialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
@@ -23,8 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
+import com.example.myapplication.activity.AddProductActivity
 import com.example.myapplication.activity.MainUserActivity
 import com.example.myapplication.activity.RegisterViewModel
+import com.example.myapplication.models.ModelProduct
 import com.example.myapplication.models.UserModel
 import com.example.myapplication.util.ImageHelper
 import com.example.myapplication.util.MyUtil
@@ -35,7 +36,6 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class RegisterUserActivity: AppCompatActivity()
@@ -56,24 +56,17 @@ class RegisterUserActivity: AppCompatActivity()
     private lateinit var mCurrentPhotoPath: String
     private lateinit var mImageView: ImageView
 
-    val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1
+    val CAMERA_REQUEST_CODE = 200
+    val STORAGE_REQUEST_CODE = 300
 
-    val WRITE_EXTERNAL_STORAGE_PERMISSION = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-    val CAMERA_PERMISSION = android.Manifest.permission.CAMERA
-    val READ_EXTERNAL_STORAGE_PERMISSION = android.Manifest.permission.READ_EXTERNAL_STORAGE
-
+    val IMAGE_PICK_GALLERY_CODE = 400
+    val IMAGE_PICK_CAMERA_CODE = 500
 
     lateinit var userInfo: UserInfo
 
     lateinit var viewModel: RegisterViewModel
 
     lateinit var userModel: UserModel
-
-    private val CAMERA_REQUEST_CODE = 200
-    private val STORAGE_REQUEST_CODE = 300
-
-    private val IMAGE_PICK_GALLERY_CODE = 400
-    private val IMAGE_PICK_CAMERA_CODE = 500
 
     val storageReference = FirebaseStorage.getInstance().getReference("/profile_images")
 
@@ -112,7 +105,7 @@ class RegisterUserActivity: AppCompatActivity()
         progressDialog!!.setTitle("Please wait")
         progressDialog!!.setCanceledOnTouchOutside(false)
         backBtn!!.setOnClickListener(View.OnClickListener { onBackPressed() })
-        profileIv!!.setOnClickListener(View.OnClickListener { ImageHelper.captureImage(this) })
+        profileIv!!.setOnClickListener(View.OnClickListener { showImagePickDialog() })
         registerBtn!!.setOnClickListener(View.OnClickListener { inputData() })
 //        registerSellerTv.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -205,7 +198,7 @@ class RegisterUserActivity: AppCompatActivity()
                 if (it.isSuccessful) {
                     Log.e("REG Activity", "onChanged: IF")
                     viewModel.setUserData(userModel)
-                    viewModel.userInfoMutableLiveData.observe(this@RegisterUserActivity, Observer{
+                    viewModel.userInfoMutableLiveData.observe(this@RegisterUserActivity, Observer {
                         if (it.isSuccessful) {
                             val intent = Intent(this@RegisterUserActivity, MainUserActivity::class.java)
                             progressDialog!!.dismiss()
@@ -227,26 +220,6 @@ class RegisterUserActivity: AppCompatActivity()
             })
 
 
-/*//            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-//            ref.child(firebaseAuth.getUid()).setValue(hashMap)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//
-//                            progressDialog.dismiss();
-//                            startActivity(new Intent(RegisterUserActivity.this, MainUserActivity.class));
-//                            finish();
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//
-//                            progressDialog.dismiss();
-//                            startActivity(new Intent(RegisterUserActivity.this, MainUserActivity.class));
-//                            finish();
-//                        }
-//                    });*/
         } else {
             val fireBaseToken = FirebaseInstanceId.getInstance().token
             userModel = UserModel(
@@ -258,37 +231,6 @@ class RegisterUserActivity: AppCompatActivity()
             viewModel.signUpMutableLiveData.observe(this, Observer {
                 if (it.isSuccessful) {
                     Log.e("REG Activity", "onChanged: IF")
-
-/*                        viewModel.(userModel);
-
-                        viewModel.getUserInfoMutableLiveData().observe(RegisterUserActivity.this
-                                , new Observer<Task<Void>>() {
-                                    @Override
-                                    public void onChanged(Task<Void> voidTask) {
-                                        if (voidTask.isSuccessful())
-                                        {
-                                            Intent intent = new Intent(RegisterUserActivity.this, MainUserActivity.class);
-                                            progressDialog.dismiss();
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                                            userInfo.setData(userModel);
-
-                                            startActivity(intent);
-                                        }
-                                        else {
-                                            Log.e("REG Activity", "onChanged: error");
-
-                                            Log.e("REG Activity", "onChanged: else"
-                                                    + voidTask.getException().getLocalizedMessage() );
-
-                                            progressDialog.dismiss();
-                                            Toast.makeText(RegisterUserActivity.this, voidTask.getResult().toString()
-                                                    , Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-
-                                });*/
 
 
                     val imageName = MyUtil.getRandomName() + ".jpg"
@@ -304,13 +246,12 @@ class RegisterUserActivity: AppCompatActivity()
                                     viewModel!!.sendData(userModel!!)
                                     viewModel.userInfoMutableLiveData.observe(
                                             this, Observer {
-                                        if (it.isSuccessful)
-                                        {
+                                        if (it.isSuccessful) {
                                             userInfo.setData(userModel)
                                             progressDialog!!.dismiss()
                                             startActivity(
                                                     Intent(
-                                                            this,MainUserActivity::class.java
+                                                            this, MainUserActivity::class.java
                                                     )
                                             )
                                         }
@@ -337,9 +278,17 @@ class RegisterUserActivity: AppCompatActivity()
         builder.setTitle("Pick Image")
                 .setItems(options) { dialog, which ->
                     if (which == 0) {
-                        isStoragePermissionGranted(CAMERA_REQUEST_CODE)
+                        if (checkCameraPermission()) {
+                            pickFromCamera()
+                        } else {
+                            requestCameraPermissions()
+                        }
                     } else {
-                        isStoragePermissionGranted(STORAGE_REQUEST_CODE)
+                        if (checkStoragePermission()) {
+                            pickFromGallery()
+                        } else {
+                            requestStoragePermissions()
+                        }
                     }
                 }
                 .show()
@@ -352,45 +301,18 @@ class RegisterUserActivity: AppCompatActivity()
     }
 
     private fun pickFromCamera() {
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (cameraIntent.resolveActivity(packageManager) != null) {
-            // Create the File where the photo should go
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-            } catch (ex: IOException) {
-                // Error occurred while creating the File
-                Log.e("TAG", "IOException")
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile))
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
-            }
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File? {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val storageDir: File = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-                imageFileName,  // prefix
-                ".jpg",  // suffix
-                storageDir // directory
-        )
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.absolutePath
-        return image
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title")
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description")
+        uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
+        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
     }
 
     private fun checkStoragePermission(): Boolean {
         return ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED
     }
 
@@ -403,7 +325,7 @@ class RegisterUserActivity: AppCompatActivity()
                 Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_GRANTED
         val result1 = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED
         return result && result1
     }
@@ -412,155 +334,75 @@ class RegisterUserActivity: AppCompatActivity()
         ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        val map = HashMap<String, Int>()
-
-        for (i in permissions.indices)
-            map[permissions[i]] = grantResults[i]
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         when (requestCode) {
-
-            STORAGE_REQUEST_CODE -> {
-
-                when (map[Manifest.permission.READ_EXTERNAL_STORAGE]) {
-                    PackageManager.PERMISSION_GRANTED ->
-                        gotoImage(requestCode)
-                    else ->
-                        Toast.makeText(
-                                applicationContext,
-                                R.string.should_accept_premission,
-                                Toast.LENGTH_SHORT
-                        ).show()
-                }
-            }
             CAMERA_REQUEST_CODE -> {
-
-                when (map[Manifest.permission.WRITE_EXTERNAL_STORAGE]) {
-                    PackageManager.PERMISSION_GRANTED ->
+                if (grantResults.size > 0) {
+                    val cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    val storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    if (cameraAccepted && storageAccepted) {
                         pickFromCamera()
-                    else ->
-                        Toast.makeText(
-                                applicationContext,
-                                R.string.should_accept_premission,
-                                Toast.LENGTH_SHORT
-                        ).show()
+                    } else {
+                        Toast.makeText(this, "Camera & Storage Permission are required...", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            STORAGE_REQUEST_CODE -> {
+                if (grantResults.size > 0) {
+                    val storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    if (storageAccepted) {
+                        pickFromGallery()
+                    } else {
+                        Toast.makeText(this, "Storage Permission is necessary...", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
-
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun isStoragePermissionGranted(requestCode: Int): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return if (ActivityCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                when(requestCode)
-                {
-                    CAMERA_REQUEST_CODE -> {
-                        pickFromCamera()
-                    }
-                    else->{
-                        gotoImage(STORAGE_REQUEST_CODE)
-                    }
-                }
-                true
-            } else {
-
-                ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        requestCode
-                )
-                false
-            }
-        } else {
-
-            when(requestCode)
-            {
-                CAMERA_REQUEST_CODE -> {
-                    pickFromCamera()
-                }
-                else->{
-                    gotoImage(STORAGE_REQUEST_CODE)
-                }
-            }
-            return true
-        }
-    }
-
-    private fun gotoImage(requestCode: Int) {
-        val intent = Intent(
-                Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
-
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), requestCode)
-
-    }
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        if (resultCode == RESULT_OK) {
-//            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-//                image_uri = data!!.data
-//                profileIv!!.setImageURI(image_uri)
-//            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-//                profileIv!!.setImageURI(image_uri)
-//            }
-//        }
-//        super.onActivityResult(requestCode, resultCode, data)
-//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (Activity.RESULT_OK == resultCode) {
 
-            when (requestCode) {
-                STORAGE_REQUEST_CODE -> {
-                    image_uri = try {
-                        profileIv.setImageURI(data!!.data!!)
-                        uri = data.data!!
+//            when (requestCode) {
+//                STORAGE_REQUEST_CODE -> {
+            image_uri = try {
+                profileIv.setImageURI(data!!.data!!)
+                uri = data.data!!
 
-                        Log.e("URI 222", uri.path.toString() + "    ")
+                Log.e("URI 222", uri.path.toString() + "    ")
 
-                        val p: String
-                        val cursor = contentResolver
-                                .query(uri, null, null, null, null)
+                val p: String
+                val cursor = contentResolver
+                        .query(uri, null, null, null, null)
 
-                        p = if (cursor == null) {
-                            uri.path.toString()
-                        } else {
-                            cursor.moveToFirst()
-                            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-                            cursor.getString(idx)
-                        }
-                        p
-                    } catch (e: Exception) {
-                        profileIv.setImageBitmap(data!!.extras!!["data"] as Bitmap)
-                        Log.e("URI Catch", "  " + data!!.dataString!!)
-                        MyUtil.bitMapToString((data.extras!!["data"] as Bitmap))
-                    }
+                p = if (cursor == null) {
+                    uri.path.toString()
+                } else {
+                    cursor.moveToFirst()
+                    val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                    cursor.getString(idx)
                 }
+                p
+            } catch (e: Exception) {
+                profileIv.setImageBitmap(data!!.extras!!["data"] as Bitmap)
+                Log.e("URI Catch", "  " + data!!.dataString!!)
+                MyUtil.bitMapToString((data.extras!!["data"] as Bitmap))
+//                    }
+//                }
 
-                CAMERA_REQUEST_CODE ->{
-                    try {
-                        mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
-                        mImageView.setImageBitmap(mImageBitmap);
-                    } catch (e : IOException) {
-                        e.printStackTrace();
-                    }
-                }
+//                CAMERA_REQUEST_CODE -> {
+//                    try {
+//                        mImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+//                        mImageView.setImageBitmap(mImageBitmap);
+//                    } catch (e: IOException) {
+//                        e.printStackTrace();
+//                    }
             }
-
         }
-    }
 
+    }
 }

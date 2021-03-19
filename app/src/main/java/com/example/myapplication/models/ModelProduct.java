@@ -36,11 +36,10 @@ public class ModelProduct {
 
     }
 
-    public ModelProduct (String productId,String productTitle,String productDescription
+    public ModelProduct (String productTitle,String productDescription
             ,String productCategory,String productQuantity,String productIcon,
                          String originalPrice,String timestamp,String userId,String userName){
 
-        this.productId = productId;
         this.productTitle = productTitle;
         this.productDescription = productDescription;
         this.productCategory = productCategory;

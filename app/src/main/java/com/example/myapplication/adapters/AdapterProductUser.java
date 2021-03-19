@@ -80,7 +80,6 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
 
         try {
-
             Picasso.get().load(productIcon).placeholder(R.drawable.ic_add_shopping_primary).into(holder.productIconIv);
         }
         catch (Exception e){

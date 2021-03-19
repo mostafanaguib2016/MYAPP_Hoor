@@ -166,6 +166,7 @@ public class AddProductActivity extends AppCompatActivity {
                                     AddProductActivity.this.setResult(RESULT_OK,intent);
                                     AddProductActivity.this.finish();
                                 }
+
                             }
                         });
                     }
@@ -202,6 +203,13 @@ public class AddProductActivity extends AppCompatActivity {
                                     AddProductActivity.this.setResult(RESULT_OK,intent);
                                     AddProductActivity.this.finish();
                                 }
+
+                                else
+                                {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(AddProductActivity.this, "Try again !", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         });
                     }
@@ -259,7 +267,7 @@ public class AddProductActivity extends AppCompatActivity {
             String userName = new UserInfo(this).getFullName();
 
             product = new  ModelProduct(
-                    firebaseAuth.getUid(),productTitle,productDescription,productCategory
+                    productTitle,productDescription,productCategory
                     ,productQuantity,"",originalPrice,timestamp,userId,userName
             );
 
@@ -292,7 +300,7 @@ public class AddProductActivity extends AppCompatActivity {
             String userId = new  UserInfo(this).getuserId();
             String userName = new UserInfo(this).getFullName();
             product = new  ModelProduct(
-                    firebaseAuth.getUid(),productTitle,productDescription,productCategory
+                    productTitle,productDescription,productCategory
                     ,productQuantity, image_uri,originalPrice,timestamp,userId,userName
             );
 
