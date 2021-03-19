@@ -15,6 +15,8 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,6 +33,7 @@ import com.example.myapplication.Constants;
 import com.example.myapplication.R;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.OrdersModel;
+import com.example.myapplication.util.MyUtil;
 import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,7 +58,9 @@ public class AddProductActivity extends AppCompatActivity {
     ModelProduct product;
     private String[] storagePermissions;
 
-    private Uri image_uri;
+    private String image_uri;
+    private Uri uri;
+
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -128,40 +133,78 @@ public class AddProductActivity extends AppCompatActivity {
                 if (navigation.equals("order"))
                 {
 
-                    progressDialog.setMessage("Adding Order...");
-                    progressDialog.show();
-                    final String timestamp = ""+System.currentTimeMillis();
-                    String userId = new  UserInfo(AddProductActivity.this).getuserId();
-                    String userName = new  UserInfo(AddProductActivity.this).getFullName();
+                    if (image_uri == null) {
+                        progressDialog.setMessage("Adding Order...");
+                        progressDialog.show();
+                        final String timestamp = ""+System.currentTimeMillis();
+                        String userId = new  UserInfo(AddProductActivity.this).getuserId();
+                        String userName = new  UserInfo(AddProductActivity.this).getFullName();
 
-                    productTitle = titleEt.getText().toString().trim();
-                    productDescription = descriptionEt.getText().toString().trim();
-                    productCategory = categoryTv.getText().toString().trim();
-                    productQuantity = quantityEt.getText().toString().trim();
-                    originalPrice = priceEt.getText().toString().trim();
+                        productTitle = titleEt.getText().toString().trim();
+                        productDescription = descriptionEt.getText().toString().trim();
+                        productCategory = categoryTv.getText().toString().trim();
+                        productQuantity = quantityEt.getText().toString().trim();
+                        originalPrice = priceEt.getText().toString().trim();
 
 
-                    OrdersModel ordersModel = new OrdersModel(
-                            productTitle,productDescription,productCategory
-                            ,productQuantity, "",originalPrice,timestamp,userId,userName
-                    );
+                        OrdersModel ordersModel = new OrdersModel(
+                                productTitle,productDescription,productCategory
+                                ,productQuantity, "",originalPrice,timestamp,userId,userName
+                        );
 
-                    viewModel.addOrder(ordersModel);
-                    viewModel.getAddOrderLiveData().observe(AddProductActivity.this, new Observer<Task<Void>>() {
-                        @Override
-                        public void onChanged(Task<Void> voidTask) {
-                            if (voidTask.isSuccessful())
-                            {
-                                progressDialog.dismiss();
-                                Toast.makeText(AddProductActivity.this, "Order Added", Toast.LENGTH_SHORT).show();
+                        viewModel.addOrder(ordersModel);
+                        viewModel.getAddOrderLiveData().observe(AddProductActivity.this, new Observer<Task<Void>>() {
+                            @Override
+                            public void onChanged(Task<Void> voidTask) {
+                                if (voidTask.isSuccessful())
+                                {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(AddProductActivity.this, "Order Added", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent();
-                                intent.putExtra("ADD_PRODUCT",673);
-                                AddProductActivity.this.setResult(RESULT_OK,intent);
-                                AddProductActivity.this.finish();
+                                    Intent intent = new Intent();
+                                    intent.putExtra("ADD_PRODUCT",673);
+                                    AddProductActivity.this.setResult(RESULT_OK,intent);
+                                    AddProductActivity.this.finish();
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                    else {
+                        progressDialog.setMessage("Adding Order...");
+                        progressDialog.show();
+                        final String timestamp = ""+System.currentTimeMillis();
+                        String userId = new  UserInfo(AddProductActivity.this).getuserId();
+                        String userName = new  UserInfo(AddProductActivity.this).getFullName();
+
+                        productTitle = titleEt.getText().toString().trim();
+                        productDescription = descriptionEt.getText().toString().trim();
+                        productCategory = categoryTv.getText().toString().trim();
+                        productQuantity = quantityEt.getText().toString().trim();
+                        originalPrice = priceEt.getText().toString().trim();
+
+
+                        OrdersModel ordersModel = new OrdersModel(
+                                productTitle,productDescription,productCategory
+                                ,productQuantity, image_uri,originalPrice,timestamp,userId,userName
+                        );
+
+                        viewModel.addOrder(ordersModel);
+                        viewModel.getAddOrderLiveData().observe(AddProductActivity.this, new Observer<Task<Void>>() {
+                            @Override
+                            public void onChanged(Task<Void> voidTask) {
+                                if (voidTask.isSuccessful())
+                                {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(AddProductActivity.this, "Order Added", Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent();
+                                    intent.putExtra("ADD_PRODUCT",673);
+                                    AddProductActivity.this.setResult(RESULT_OK,intent);
+                                    AddProductActivity.this.finish();
+                                }
+                            }
+                        });
+                    }
 
                 }
                 else {
@@ -211,17 +254,6 @@ public class AddProductActivity extends AppCompatActivity {
 
         if (image_uri == null){
 
-//            HashMap<String, Object> hashMap = new HashMap<>();
-//            hashMap.put("timeStamp",""+timestamp);
-//            hashMap.put("productTitle",""+productTitle);
-//            hashMap.put("productDescription",""+productDescription);
-//            hashMap.put("productCategory",""+productCategory);
-//            hashMap.put("productQuantity",""+productQuantity);
-//            hashMap.put("productIcon","");
-//            hashMap.put("originalPrice",""+originalPrice);
-//            hashMap.put("timestamp",""+timestamp);
-//            hashMap.put("productId",""+firebaseAuth.getUid());
-
 
             String userId = new  UserInfo(this).getuserId();
             String userName = new UserInfo(this).getFullName();
@@ -253,45 +285,6 @@ public class AddProductActivity extends AppCompatActivity {
                 }
             });
 
-           /* CollectionReference reference = FirebaseFirestore.getInstance().collection("products");
-
-            reference.document(productId).set(product).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-
-                    if (task.isSuccessful())
-                    {
-                        Toast.makeText(AddProductActivity.this, "Product Added", Toast.LENGTH_SHORT).show();
-
-                        Intent intent = new Intent();
-                        intent.putExtra("ADD_PRODUCT",673);
-                        AddProductActivity.this.setResult(RESULT_OK,intent);
-                        AddProductActivity.this.finish();
-                    }
-                    else
-                        Toast.makeText(AddProductActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
-            });
-*/
-//            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-//            reference.child(firebaseAuth.getUid()).child("Products").child(timestamp).setValue(hashMap)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//
-//                            progressDialog.dismiss();
-//                            Toast.makeText(AddProductActivity.this, "Product added...", Toast.LENGTH_SHORT).show();
-//                            clearData();
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//
-//                            progressDialog.dismiss();
-//                            Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
 
         }
         else {
@@ -300,7 +293,7 @@ public class AddProductActivity extends AppCompatActivity {
             String userName = new UserInfo(this).getFullName();
             product = new  ModelProduct(
                     firebaseAuth.getUid(),productTitle,productDescription,productCategory
-                    ,productQuantity,image_uri.toString(),originalPrice,timestamp,userId,userName
+                    ,productQuantity, image_uri,originalPrice,timestamp,userId,userName
             );
 
 
@@ -327,60 +320,6 @@ public class AddProductActivity extends AppCompatActivity {
             });
 
 
-            /*String filePathAndName = "product_image/"+""+timestamp;
-
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference(filePathAndName);
-            storageReference.putFile(image_uri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                            while (!uriTask.isSuccessful());
-                            Uri downloadImageUri = uriTask.getResult();
-
-                            if (uriTask.isSuccessful()){
-
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("productId",""+timestamp);
-                                hashMap.put("productTitle",""+productTitle);
-                                hashMap.put("productDescription",""+productDescription);
-                                hashMap.put("productCategory",""+productCategory);
-                                hashMap.put("productQuantity",""+productQuantity);
-                                hashMap.put("productIcon",""+downloadImageUri);
-                                hashMap.put("originalPrice",""+originalPrice);
-                                hashMap.put("timestamp",""+timestamp);
-                                hashMap.put("uid",""+firebaseAuth.getUid());
-
-                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-                                reference.child(firebaseAuth.getUid()).child("Products").child(timestamp).setValue(hashMap)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-
-                                                progressDialog.dismiss();
-                                                Toast.makeText(AddProductActivity.this, "Product added...", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-
-                                                progressDialog.dismiss();
-                                                Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                            progressDialog.dismiss();
-                            Toast.makeText(AddProductActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });*/
         }
     }
 
@@ -457,7 +396,7 @@ public class AddProductActivity extends AppCompatActivity {
         contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title");
         contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description");
 
-        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
@@ -535,14 +474,38 @@ public class AddProductActivity extends AppCompatActivity {
 
             if (requestCode == IMAGE_PICK_GALLERY_CODE){
 
-                image_uri = data.getData();
+                try{
 
-                productIconIv.setImageURI(image_uri);
+                    productIconIv.setImageURI(data.getData());
+                    uri = data.getData();
+                    String p = "";
+
+                    Cursor cursor = getContentResolver().query(
+                            uri,null,null,null,null
+                    );
+
+                    if(cursor == null) {
+                        p = uri.getPath().toString();
+                    } else {
+                        cursor.moveToFirst();
+                        int indx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                        p = cursor.getString(indx);
+                    }
+
+                    image_uri = p;
+                }
+                catch (Exception e){
+
+                    productIconIv.setImageBitmap((Bitmap) data.getExtras().get("data"));
+
+                    image_uri = MyUtil.Companion.bitMapToString((Bitmap) data.getExtras().get("data"));
+                }
+
 
             }
             else if(requestCode == IMAGE_PICK_CAMERA_CODE){
 
-                productIconIv.setImageURI(image_uri);
+//                productIconIv.setImageURI(image_uri);
 
             }
 

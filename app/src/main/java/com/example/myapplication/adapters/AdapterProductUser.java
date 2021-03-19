@@ -66,7 +66,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         String productQuantity = modelProduct.getProductQuantity();
         String productId = modelProduct.getProductId();
         String timestamp = modelProduct.getTimestamp();
-        String productIcon = modelProduct.getProductIcon();
+        String productIcon = modelProduct.getProductIconUrl();
         String ownerId = modelProduct.getUserId();
 
         String userId = new UserInfo(context).getuserId();

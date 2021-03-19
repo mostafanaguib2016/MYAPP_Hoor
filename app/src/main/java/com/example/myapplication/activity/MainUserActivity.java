@@ -131,6 +131,19 @@ public class MainUserActivity extends AppCompatActivity {
 
         tabShopsTv.setText("Products");
 
+        addProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+
+                intent.putExtra("navigation","product");
+
+                startActivityForResult
+                        (intent,ADD_PRODUCT);
+            }
+        });
+
         tabShopsTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -372,6 +385,7 @@ public class MainUserActivity extends AppCompatActivity {
 
             if (requestCode == ADD_PRODUCT){
                 loadShops("");
+                getOrders();
             }
         }
 

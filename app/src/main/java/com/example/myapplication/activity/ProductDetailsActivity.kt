@@ -29,6 +29,7 @@ class ProductDetailsActivity : AppCompatActivity() {
     lateinit var product: ModelProduct
     lateinit var order : OrdersModel
     lateinit var commentsAdapter: CommentsAdapter
+    lateinit var userInfo: UserInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,9 @@ class ProductDetailsActivity : AppCompatActivity() {
 
         val productId = intent.extras!!.getString("productId")!!
         val navigation = intent.extras!!.getString("navigation")!!
+        userInfo = UserInfo(this)
+        val userId = userInfo.getuserId()
+
 
         getProduct(productId, navigation)
         commentsAdapter = CommentsAdapter()
@@ -175,6 +179,9 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                     if (product.productId.equals(productId))
                     {
+                        if (userInfo.getuserId() == product.userId)
+                            binding.sendMsg.visibility = GONE
+
                         binding.productTb.titleTv.text = product.productTitle
                         binding.productTb.originalPriceTv.text= product.originalPrice
                         binding.productTb.descriptionTv.text = product.productDescription

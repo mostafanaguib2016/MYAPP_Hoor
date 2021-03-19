@@ -8,6 +8,7 @@ public class OrdersModel
     private String orderCategory;
     private String orderQuantity;
     private String orderIcon;
+    private String orderIconUrl;
     private String originalPrice;
     private String timestamp;
     private String userId;
@@ -22,6 +23,14 @@ public class OrdersModel
     }
 
     public OrdersModel() {
+    }
+
+    public String getOrderIconUrl() {
+        return orderIconUrl;
+    }
+
+    public void setOrderIconUrl(String orderIconUrl) {
+        this.orderIconUrl = orderIconUrl;
     }
 
     public String getOrderId() {

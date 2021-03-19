@@ -68,12 +68,22 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
         holder.descriptionTv.setText(productTitle);
         holder.originalPriceTv.setText("$"+originalPrice);
         String ownerId = orderProduct.getUserId();
+        String orderIcon = orderProduct.getOrderIconUrl();
 
         String userId = new UserInfo(context).getuserId();
 
         if (!userId.equals(ownerId))
             holder.deleteIv.setVisibility(View.GONE);
 
+        try {
+
+            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(holder.productIconIv);
+        }
+        catch (Exception e){
+
+            holder.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
+
+        }
 
         holder.addToCartTv.setVisibility(View.GONE);
 

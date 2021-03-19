@@ -67,14 +67,37 @@ class AddProductViewModel: ViewModel()
 
     fun addOrder(orderModel: OrdersModel){
 
+        if (orderModel.orderIcon.isNotEmpty()) {
+
+            val imageName = MyUtil.getRandomName() + ".jpg"
+            val file: Uri = Uri.fromFile(File(orderModel.orderIcon))
+
+            mStorageRefUser.child(imageName).putFile(file)
+                    .continueWithTask {
+                        mStorageRefUser.child(imageName).downloadUrl
+                    }.addOnSuccessListener {
+
+                        orderModel.orderIcon = imageName
+                        orderModel.orderIconUrl = it.toString()
+                        sendOrderData(orderModel)
+                    }
+        } else {
+            sendOrderData(orderModel)
+        }
+    }
+
+    fun sendOrderData(orderModel: OrdersModel){
+
         val db = FirebaseFirestore.getInstance()
 
         val id = db.collection("orders").document().id
         orderModel.orderId = id
+
         db.collection("orders").document(id).set(orderModel)
                 .addOnCompleteListener {
                     addOrderLiveData.value = it
                 }
+
     }
 
     fun deleteProduct(productId: String){
