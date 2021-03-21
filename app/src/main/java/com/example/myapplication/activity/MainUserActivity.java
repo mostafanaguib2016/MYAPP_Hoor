@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activity.chat.MessagesActivity;
+import com.example.myapplication.activity.my_ads.MyAdsActivity;
 import com.example.myapplication.adapters.AdapterOrder;
 import com.example.myapplication.adapters.AdapterProductSeller;
 import com.example.myapplication.adapters.AdapterProductUser;
@@ -48,7 +49,7 @@ import java.util.HashMap;
 
 public class MainUserActivity extends AppCompatActivity {
 
-    private TextView nameTv, emailTv, phoneTv, tabShopsTv,tabOrdersTv;
+    private TextView nameTv, emailTv, phoneTv, tabShopsTv,tabOrdersTv,myAdsTv;
     private RelativeLayout shopsRl, ordersRl;
     private ImageButton logoutBtn,editProfileBtn,addProductBtn,messageBtn;
     private ImageView profileIv;
@@ -91,6 +92,16 @@ public class MainUserActivity extends AppCompatActivity {
         orderRv = findViewById(R.id.orderRv);
         addProductBtn = findViewById(R.id.addProductBtn);
         messageBtn = findViewById(R.id.messageBtn);
+        myAdsTv = findViewById(R.id.myAdsTv);
+
+        myAdsTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(
+                        new Intent(MainUserActivity.this, MyAdsActivity.class)
+                );
+            }
+        });
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please wait");

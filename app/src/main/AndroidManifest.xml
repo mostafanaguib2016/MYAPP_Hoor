@@ -22,12 +22,13 @@
         android:allowBackup="true"
         android:icon="@drawable/fdg"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/fdg"
         android:supportsRtl="true"
-        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.ProductDetailsActivity"/>
+        <activity android:name=".activity.my_ads.MyAdsActivity"/>
+        <activity android:name=".activity.ProductDetailsActivity" />
         <activity android:name=".activity.ShopDetailsActivity" />
         <activity android:name=".activity.EditProductActivity" />
         <activity android:name=".activity.AddProductActivity" />
@@ -38,10 +39,10 @@
         <activity android:name=".activity.ForgotPasswordActivity" />
         <activity android:name=".activity.RegisterUserActivity" />
         <activity android:name=".activity.RegisterSellerActivity" />
-        <activity android:name=".activity.chat.MessagesActivity"/>
-        <activity android:name=".activity.chat.chat.ChatActivity"/>
+        <activity android:name=".activity.chat.MessagesActivity" />
+        <activity android:name=".activity.chat.chat.ChatActivity" />
         <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.register.RegisterUserActivity"/>
+        <activity android:name=".activity.register.RegisterUserActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,7 +54,6 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
 
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -63,7 +63,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
     </application>
 
 </manifest>

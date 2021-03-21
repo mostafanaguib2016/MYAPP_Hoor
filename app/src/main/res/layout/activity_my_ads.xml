@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainUserActivity">
+    >
 
     <RelativeLayout
         android:id="@+id/toolbarRl"
@@ -28,8 +28,6 @@
             android:src="@drawable/ic_edit_white"
             android:layout_toStartOf="@+id/logoutBtn"
             android:background="@null"/>
-
-
 
         <ImageButton
             android:id="@+id/addProductBtn"
@@ -83,21 +81,6 @@
             android:layout_toEndOf="@+id/profileIv"
             android:layout_below="@id/emailTv"/>
 
-        <TextView
-            android:id="@+id/myAdsTv"
-            android:text="My Ads"
-            android:textColor="@color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/emailTv"
-            android:textSize="@dimen/_13ssp"
-            android:background="@drawable/shape_rect04"
-            android:paddingHorizontal="@dimen/_15sdp"
-            android:paddingVertical="@dimen/_2sdp"
-            android:layout_marginHorizontal="@dimen/_10sdp"
-            />
-
         <LinearLayout
             android:layout_below="@+id/profileIv"
             android:layout_width="match_parent"
@@ -114,7 +97,7 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:background="@drawable/shape_rect04"
-                android:text="Shops"
+                android:text="My Products"
                 android:textColor="@color/black" />
 
             <TextView
@@ -123,7 +106,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:layout_weight="1"
-                android:text="Orders"
+                android:text="My Orders"
                 android:textColor="@color/white" />
 
         </LinearLayout>
