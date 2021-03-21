@@ -29,13 +29,13 @@ class MessagesActivity: AppCompatActivity()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_messages)
 
         viewModel = ViewModelProvider.NewInstanceFactory().create(MessagesViewModel::class.java)
+        adapter = MessageAdapter(this,viewModel)
 
         userInfo = UserInfo(this)
         val userId = userInfo.getuserId()
 
         loadMyInfo()
         list = ArrayList()
-
         viewModel.showMessages(userId)
         viewModel.messageMutableLiveData.observe(this, Observer {
 
@@ -44,9 +44,7 @@ class MessagesActivity: AppCompatActivity()
 
             list = ArrayList()
 
-            if (it.isEmpty())
-                binding.noData.visibility = VISIBLE
-            else
+            if (it.isNotEmpty())
             {
                 val size = it.size-2
 
@@ -57,18 +55,23 @@ class MessagesActivity: AppCompatActivity()
                         list.add(it[i])
                 }
 
-                Log.e("MESSAGES s", "${list[list.size-1].toString()}    ")
                 adapter.setData(list)
+                Log.e("MESSAGES s", "${list[list.size-1].toString()}    ")
+
+            }
+            else
+            {
+                binding.noData.visibility = VISIBLE
             }
 
         })
 
-        adapter = MessageAdapter(this)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
     }
+
 
     fun loadMyInfo()
     {

@@ -4,7 +4,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.adapters.AdapterProductUser
 import com.example.myapplication.models.ModelProduct
 import com.example.myapplication.models.OrdersModel
 import com.example.myapplication.util.MyUtil
@@ -13,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
-import java.util.ArrayList
+import java.util.*
 
 class AddProductViewModel: ViewModel()
 {
@@ -23,6 +22,8 @@ class AddProductViewModel: ViewModel()
     val productsLiveData = MutableLiveData<List<ModelProduct>>()
     val deleteProductLiveData = MutableLiveData<Task<Void>>()
     val ordersLiveData = MutableLiveData<List<OrdersModel>>()
+    val updateOrderLiveData = MutableLiveData<Task<Void>>()
+    val updateProductLiveData = MutableLiveData<Task<Void>>()
 
     private val mStorageRefUser = FirebaseStorage.getInstance().getReference("products")
     private val mStorageRefOrder = FirebaseStorage.getInstance().getReference("orders")
@@ -81,7 +82,7 @@ class AddProductViewModel: ViewModel()
 
             mStorageRefUser.child(imageName).putFile(file)
                     .continueWithTask {
-                        Log.e("TAG Order", "addOrder: ${mStorageRefUser.child(imageName).downloadUrl}" )
+                        Log.e("TAG Order", "addOrder: ${mStorageRefUser.child(imageName).downloadUrl}")
                         mStorageRefUser.child(imageName).downloadUrl
                     }.addOnSuccessListener {
 
@@ -116,6 +117,106 @@ class AddProductViewModel: ViewModel()
                 deleteProductLiveData.value = it
                 getProducts()
             }
+        }
+
+    }
+
+    fun updateProduct(productId: String,product: ModelProduct)
+    {
+
+        if (product.productIcon.isNotEmpty()){
+
+            val imageName = MyUtil.getRandomName() + ".jpg"
+            val file: Uri = Uri.fromFile(File(product.productIcon))
+
+            mStorageRefUser.child(imageName).putFile(file)
+                    .continueWithTask {
+                        mStorageRefUser.child(imageName).downloadUrl
+                    }.addOnSuccessListener {
+
+                        product.productIcon = imageName
+                        product.productIconUrl = it.toString()
+                        val hashMap = hashMapOf<String, Any>(
+                                "productTitle" to product.productTitle,
+                                "productDescription" to product.productDescription,
+                                "productCategory" to product.productCategory,
+                                "productIcon" to product.productIcon,
+                                "productQuantity" to product.productQuantity,
+                                "originalPrice" to product.originalPrice
+                        )
+
+                        db.collection("products").document(productId)
+                                .update(hashMap).addOnCompleteListener {
+                                    updateProductLiveData.value = it
+                                }
+
+                    }
+
+        }
+        else{
+            val hashMap = hashMapOf<String, Any>(
+                    "productTitle" to product.productTitle,
+                    "productDescription" to product.productDescription,
+                    "productCategory" to product.productCategory,
+                    "productQuantity" to product.productQuantity,
+                    "originalPrice" to product.originalPrice
+            )
+
+            db.collection("products").document(productId)
+                    .update(hashMap).addOnCompleteListener {
+                        updateProductLiveData.value = it
+                    }
+
+        }
+
+    }
+
+    fun updateOrder(orderId: String,order: OrdersModel){
+
+        if (order.orderIcon.isNotEmpty()){
+
+            val imageName = MyUtil.getRandomName() + ".jpg"
+            val file: Uri = Uri.fromFile(File(order.orderIcon))
+
+            mStorageRefUser.child(imageName).putFile(file)
+                    .continueWithTask {
+                        mStorageRefUser.child(imageName).downloadUrl
+                    }.addOnSuccessListener {
+
+                        order.orderIcon = imageName
+                        order.orderIconUrl = it.toString()
+                        val hashMap = hashMapOf<String, Any>(
+                                "orderTitle" to order.orderTitle,
+                                "orderDescription" to order.orderDescription,
+                                "orderCategory" to order.orderCategory,
+                                "orderQuantity" to order.orderQuantity,
+                                "originalPrice" to order.originalPrice,
+                                "orderIcon" to order.orderIcon,
+                                "orderIconUrl" to order.orderIconUrl
+                        )
+
+                        db.collection("orders").document(orderId)
+                                .update(hashMap).addOnCompleteListener {
+                                    updateOrderLiveData.value = it
+                                }
+
+                    }
+
+        }
+        else{
+            val hashMap = hashMapOf<String, Any>(
+                    "orderTitle" to order.orderTitle,
+                    "orderDescription" to order.orderDescription,
+                    "orderCategory" to order.orderCategory,
+                    "orderQuantity" to order.orderQuantity,
+                    "originalPrice" to order.originalPrice
+            )
+
+            db.collection("orders").document(orderId)
+                    .update(hashMap).addOnCompleteListener {
+                        updateOrderLiveData.value = it
+                    }
+
         }
 
     }

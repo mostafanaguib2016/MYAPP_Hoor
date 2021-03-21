@@ -2,6 +2,7 @@ package com.example.myapplication.activity.chat
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.models.MessageModel
 import com.example.myapplication.models.UserModel
@@ -17,6 +18,7 @@ class MessagesViewModel : ViewModel()
     val messageMutableLiveData = MutableLiveData<List<MessageModel>>()
     val sendMsgMutableLiveData = MutableLiveData<Task<Void>>()
     val userMutableLiveData = MutableLiveData<UserModel>()
+    val deleteMsgMutableLiveData = MutableLiveData<Task<Void>>()
 
     fun showMessages(userId: String) {
         db.orderBy("timestamp", Query.Direction.DESCENDING)
@@ -86,6 +88,42 @@ class MessagesViewModel : ViewModel()
                 showChat(message.ownerId,message.userId)
             }
         }
+    }
+
+    fun deleteChat(ownerId: String,userId: String){
+
+        db.orderBy("timestamp")
+                .addSnapshotListener { querySnapshot, _ ->
+
+                    val messages = ArrayList<MessageModel>()
+
+                    if (querySnapshot != null) {
+                        querySnapshot.documents.forEach {
+                            messages.add(it.toObject(MessageModel::class.java)!!)
+                            Log.e("TAG",messages[0].message)
+                        }
+
+                        Log.e("SIZE of",messages.size.toString() + "   ")
+
+                        val list = ArrayList<MessageModel>()
+
+                        for (i in messages.indices){
+                            if ((messages[i].senderId == ownerId || messages[i].receiverId == ownerId)
+                                    && (messages[i].senderId == userId || messages[i].receiverId == userId))
+                                db.document(messages[i].id).delete().addOnCompleteListener {
+                                    messageMutableLiveData.removeObserver {
+                                        messages[i]
+                                    }
+
+                                    deleteMsgMutableLiveData.value = it
+                                }
+                        }
+                        Log.e("SIZE",list.size.toString() + "   ")
+
+                    }
+
+                }
+
     }
 
     fun getFireBaseToken(userId: String){

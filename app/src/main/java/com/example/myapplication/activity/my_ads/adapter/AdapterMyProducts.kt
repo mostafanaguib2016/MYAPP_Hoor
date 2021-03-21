@@ -76,12 +76,12 @@ class AdapterMyProducts(val viewModel: MyAdsViewModel, val context: Context)
 
             }
 
-            binding.root.setOnClickListener {
-                val intent = Intent(context, ProductDetailsActivity::class.java)
-                intent.putExtra("productId", currentItem.productId)
-                intent.putExtra("navigation", "product")
-                context.startActivity(intent)
-            }
+//            binding.root.setOnClickListener {
+//                val intent = Intent(context, ProductDetailsActivity::class.java)
+//                intent.putExtra("productId", currentItem.productId)
+//                intent.putExtra("navigation", "product")
+//                context.startActivity(intent)
+//            }
 
             binding.editBtn.setOnClickListener {
 
