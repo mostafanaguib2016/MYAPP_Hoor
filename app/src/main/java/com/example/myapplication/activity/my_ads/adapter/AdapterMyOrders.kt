@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.activity.EditProductActivity
@@ -66,7 +67,7 @@ class AdapterMyOrders(val viewModel: MyAdsViewModel, val context: Context)
                 db.document(currentItem.orderId).delete().addOnCompleteListener {
                     notifyDataSetChanged()
                     viewModel.myOrders(userId)
-                    viewModel.myOrdersMutableLiveData.observe(context as LifecycleOwner, {
+                    viewModel.myOrdersMutableLiveData.observe(context as LifecycleOwner, Observer{
                         setData(it as ArrayList<OrdersModel>)
                     })
                 }
@@ -74,12 +75,12 @@ class AdapterMyOrders(val viewModel: MyAdsViewModel, val context: Context)
 
             }
 
-            binding.root.setOnClickListener(View.OnClickListener {
+            binding.root.setOnClickListener {
                 val intent = Intent(context, ProductDetailsActivity::class.java)
                 intent.putExtra("productId", currentItem.orderId)
                 intent.putExtra("navigation", "order")
                 context.startActivity(intent)
-            })
+            }
 
             binding.editBtn.setOnClickListener {
 
