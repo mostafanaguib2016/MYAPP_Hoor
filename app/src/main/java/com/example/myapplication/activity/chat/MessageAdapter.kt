@@ -64,6 +64,12 @@ class MessageAdapter(val context: Context): RecyclerView.Adapter<MessageAdapter.
                 context.startActivity(bundle)
             }
 
+            binding.deleteBtn.setOnClickListener {
+
+
+
+            }
+
         }
 
 
