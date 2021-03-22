@@ -49,6 +49,9 @@ class RegisterViewModel: ViewModel()
                     usersMutableLiveData.value = data
                 }
     }
+
+
+
     fun setUserData(userRequest: UserModel) {
 
         if (userRequest.profileImage.isNotEmpty()) {

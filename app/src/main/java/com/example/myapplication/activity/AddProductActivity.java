@@ -139,6 +139,7 @@ public class AddProductActivity extends AppCompatActivity {
                         final String timestamp = ""+System.currentTimeMillis();
                         String userId = new  UserInfo(AddProductActivity.this).getuserId();
                         String userName = new  UserInfo(AddProductActivity.this).getFullName();
+                        String userImage = new UserInfo(AddProductActivity.this).getImage();
 
                         productTitle = titleEt.getText().toString().trim();
                         productDescription = descriptionEt.getText().toString().trim();
@@ -149,7 +150,7 @@ public class AddProductActivity extends AppCompatActivity {
 
                         OrdersModel ordersModel = new OrdersModel(
                                 productTitle,productDescription,productCategory
-                                ,productQuantity, "",originalPrice,timestamp,userId,userName
+                                ,productQuantity, "",originalPrice,timestamp,userId,userName, userImage
                         );
 
                         viewModel.addOrder(ordersModel);
@@ -176,6 +177,7 @@ public class AddProductActivity extends AppCompatActivity {
                         final String timestamp = ""+System.currentTimeMillis();
                         String userId = new  UserInfo(AddProductActivity.this).getuserId();
                         String userName = new  UserInfo(AddProductActivity.this).getFullName();
+                        String userImage = new UserInfo(AddProductActivity.this).getImage();
 
                         productTitle = titleEt.getText().toString().trim();
                         productDescription = descriptionEt.getText().toString().trim();
@@ -186,7 +188,7 @@ public class AddProductActivity extends AppCompatActivity {
 
                         OrdersModel ordersModel = new OrdersModel(
                                 productTitle,productDescription,productCategory
-                                ,productQuantity, image_uri,originalPrice,timestamp,userId,userName
+                                ,productQuantity, image_uri,originalPrice,timestamp,userId,userName,userImage
                         );
 
                         viewModel.addOrder(ordersModel);
@@ -265,10 +267,11 @@ public class AddProductActivity extends AppCompatActivity {
 
             String userId = new  UserInfo(this).getuserId();
             String userName = new UserInfo(this).getFullName();
+            String userImage = new UserInfo(AddProductActivity.this).getImage();
 
             product = new  ModelProduct(
                     productTitle,productDescription,productCategory
-                    ,productQuantity,"",originalPrice,timestamp,userId,userName
+                    ,productQuantity,"",originalPrice,timestamp,userId,userName,userImage
             );
 
             viewModel.setProductData(product);
@@ -299,9 +302,12 @@ public class AddProductActivity extends AppCompatActivity {
 
             String userId = new  UserInfo(this).getuserId();
             String userName = new UserInfo(this).getFullName();
+            String userImage = new UserInfo(AddProductActivity.this).getImage();
+
+
             product = new  ModelProduct(
                     productTitle,productDescription,productCategory
-                    ,productQuantity, image_uri,originalPrice,timestamp,userId,userName
+                    ,productQuantity, image_uri,originalPrice,timestamp,userId,userName,userImage
             );
 
 

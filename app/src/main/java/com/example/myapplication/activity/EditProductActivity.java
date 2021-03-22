@@ -286,7 +286,7 @@ public class EditProductActivity extends AppCompatActivity {
 
                 OrdersModel ordersModel = new OrdersModel(
                         productTitle,productDescription,productCategory
-                        ,productQuantity, "",originalPrice,"","",""
+                        ,productQuantity, "",originalPrice,"","","",""
                 );
 
                 viewModel.updateOrder(productId,ordersModel);
@@ -336,7 +336,7 @@ public class EditProductActivity extends AppCompatActivity {
 
                 OrdersModel ordersModel = new OrdersModel(
                         productTitle,productDescription,productCategory
-                        ,productQuantity, image_uri,originalPrice,"","",""
+                        ,productQuantity, image_uri,originalPrice,"","","",""
                 );
 
                 viewModel.updateOrder(productId,ordersModel);

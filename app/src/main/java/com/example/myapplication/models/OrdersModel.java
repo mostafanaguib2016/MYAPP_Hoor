@@ -13,6 +13,15 @@ public class OrdersModel
     private String timestamp;
     private String userId;
     private String userName;
+    private String userImage;
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
 
     public String getUserName() {
         return userName;
@@ -107,7 +116,7 @@ public class OrdersModel
 
     public OrdersModel( String orderTitle, String orderDescription, String orderCategory
             , String orderQuantity, String orderIcon, String originalPrice
-            , String timestamp, String userId,String userName) {
+            , String timestamp, String userId,String userName,String userImage) {
         this.orderTitle = orderTitle;
         this.orderDescription = orderDescription;
         this.orderCategory = orderCategory;
@@ -117,5 +126,6 @@ public class OrdersModel
         this.timestamp = timestamp;
         this.userId = userId;
         this.userName = userName;
+        this.userImage = userImage;
     }
 }

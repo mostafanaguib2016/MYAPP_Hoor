@@ -11,6 +11,15 @@ public class ModelProduct {
     private String originalPrice;
     private String timestamp;
     private String userId;
+    private String userImage;
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
 
     public String getUserName() {
         return userName;
@@ -38,7 +47,7 @@ public class ModelProduct {
 
     public ModelProduct (String productTitle,String productDescription
             ,String productCategory,String productQuantity,String productIcon,
-                         String originalPrice,String timestamp,String userId,String userName){
+                         String originalPrice,String timestamp,String userId,String userName,String userImage){
 
         this.productTitle = productTitle;
         this.productDescription = productDescription;
@@ -49,6 +58,7 @@ public class ModelProduct {
         this.timestamp = timestamp;
         this.userId = userId;
         this.userName = userName;
+        this.userImage = userImage;
     }
 
     public String getProductId(){

@@ -22,12 +22,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
-import com.example.myapplication.activity.AddProductActivity
 import com.example.myapplication.activity.MainUserActivity
 import com.example.myapplication.activity.RegisterViewModel
-import com.example.myapplication.models.ModelProduct
 import com.example.myapplication.models.UserModel
-import com.example.myapplication.util.ImageHelper
 import com.example.myapplication.util.MyUtil
 import com.example.myapplication.util.UserInfo
 import com.google.firebase.auth.FirebaseAuth
@@ -35,8 +32,8 @@ import com.google.firebase.firestore.FirebaseFirestore.InstanceRegistry
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
-import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class RegisterUserActivity: AppCompatActivity()
 {
@@ -61,6 +58,8 @@ class RegisterUserActivity: AppCompatActivity()
 
     val IMAGE_PICK_GALLERY_CODE = 400
     val IMAGE_PICK_CAMERA_CODE = 500
+
+    lateinit var users: ArrayList<UserModel>
 
     lateinit var userInfo: UserInfo
 
@@ -98,6 +97,16 @@ class RegisterUserActivity: AppCompatActivity()
         registerBtn = findViewById(R.id.registerBtn)
         registerSellerTv = findViewById(R.id.registerSellerTv)
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
+
+        users = ArrayList()
+
+        viewModel.getAllUsers()
+        viewModel.usersMutableLiveData.observe(this, {
+            users = it as ArrayList<UserModel>
+
+        })
+
+
         cameraPermissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
         storagePermissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         firebaseAuth = FirebaseAuth.getInstance()
@@ -140,7 +149,32 @@ class RegisterUserActivity: AppCompatActivity()
                     if (password.length < 6) {
                         passwordEt.setError("Password must be atleast 6 characters long...")
                     } else {
-                        createAccount()
+
+                        var isExisted = false
+
+                        Log.e("USers size", "inputData: ${users.size}")
+
+                        for (i in users.indices) {
+
+                            Log.e("Namess", "inputData: ${users[i].name}  $fullName", )
+
+                            if (users[i].name == fullName) {
+                                Log.e("TAG", "inputData: true")
+                                isExisted = true
+                                break
+                            } else {
+                                Log.e("TAG F", "inputData: false")
+                                isExisted = false
+                            }
+                        }
+
+                        if (isExisted) {
+                            Log.e("TAG TTT", "inputData: false")
+                            nameEt.error = "This name is used by another account please enter another one"
+                        } else {
+                            Log.e("TAG FFFF", "inputData: false")
+                            createAccount()
+                        }
                     }
                 }
             } else Toast.makeText(this, "Passwords are not identical", Toast.LENGTH_SHORT).show()
@@ -178,7 +212,7 @@ class RegisterUserActivity: AppCompatActivity()
     private fun saveFirebaseData() {
         progressDialog!!.setMessage("Saving Account Info...")
         val timestamp = "" + System.currentTimeMillis()
-        if (image_uri == null) {
+        if (image_uri.isEmpty()) {
             val hashMap = HashMap<String, Any>()
             hashMap["uid"] = "" + firebaseAuth!!.uid
             hashMap["email"] = "" + email
