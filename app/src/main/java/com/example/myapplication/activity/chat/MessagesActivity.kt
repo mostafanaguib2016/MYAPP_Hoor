@@ -24,6 +24,8 @@ class MessagesActivity: AppCompatActivity()
     lateinit var list: ArrayList<MessageModel>
     lateinit var userInfo: UserInfo
 
+    val TAG = "MessagesActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_messages)
@@ -35,7 +37,7 @@ class MessagesActivity: AppCompatActivity()
         val userId = userInfo.getuserId()
 
         loadMyInfo()
-        list = ArrayList()
+//        list = ArrayList()
         viewModel.showMessages(userId)
         viewModel.messageMutableLiveData.observe(this, Observer {
 
@@ -44,23 +46,20 @@ class MessagesActivity: AppCompatActivity()
 
             list = ArrayList()
 
-            if (it.isNotEmpty())
-            {
-                val size = it.size-2
+            if (it.isNotEmpty()) {
+                val size = it.size
 
                 list.add(it[0])
-                for (i in 0..size)
-                {
-                    if (it[i+1].userId != it[i].userId)
+                for (i in 1 until size) {
+                    Log.e(TAG, "onCreate: i  $i" )
+                    if (it[i - 1].userId != it[i].userId)
                         list.add(it[i])
                 }
 
                 adapter.setData(list)
-                Log.e("MESSAGES s", "${list[list.size-1].toString()}    ")
+                Log.e("MESSAGES s", "${list[list.size - 1].toString()}    ")
 
-            }
-            else
-            {
+            } else {
                 binding.noData.visibility = VISIBLE
             }
 

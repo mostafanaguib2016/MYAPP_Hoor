@@ -156,8 +156,6 @@ public class EditProductActivity extends AppCompatActivity {
 
         if (navigation.equals("order")){
 
-            String productIcon = "";
-
             CollectionReference reference = FirebaseFirestore.getInstance().collection("orders");
 
             reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -173,6 +171,13 @@ public class EditProductActivity extends AppCompatActivity {
                             quantityEt.setText(order.getOrderQuantity());
                             priceEt.setText(order.getOriginalPrice());
 
+                            try {
+                                String orderIcon = order.getOrderIconUrl();
+                                        Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(productIconIv);
+                            } catch (Exception e) {
+                                productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
+                            }
+
                             break;
                         }
 
@@ -181,79 +186,39 @@ public class EditProductActivity extends AppCompatActivity {
                 }
             });
 
-
-
-            try {
-
-                Picasso.get().load(productIcon).placeholder(R.drawable.ic_add_shopping_white).into(productIconIv);
-            }
-            catch (Exception e){
-                productIconIv.setImageResource(R.drawable.ic_add_shopping_white);
-            }
 
         }
 
         else {
-            String productIcon = "";
 
             CollectionReference reference = FirebaseFirestore.getInstance().collection("products");
 
-            reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            reference.get().addOnCompleteListener(task -> {
 
-                    for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
-                        product = snapshot.toObject(ModelProduct.class);
-                        if (product.getProductId().equals(productId)){
-                            titleEt.setText(product.getProductTitle());
-                            descriptionEt.setText(product.getProductDescription());
-                            categoryTv.setText(product.getProductCategory());
-                            quantityEt.setText(product.getProductQuantity());
-                            priceEt.setText(product.getOriginalPrice());
-                            break;
+                for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
+                    product = snapshot.toObject(ModelProduct.class);
+                    if (product.getProductId().equals(productId)){
+                        titleEt.setText(product.getProductTitle());
+                        descriptionEt.setText(product.getProductDescription());
+                        categoryTv.setText(product.getProductCategory());
+                        quantityEt.setText(product.getProductQuantity());
+                        priceEt.setText(product.getOriginalPrice());
+
+                        try {
+                            String orderIcon = product.getProductIconUrl();
+                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(productIconIv);
+                        } catch (Exception e) {
+                            productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
                         }
 
+                        break;
                     }
 
                 }
+
             });
-
-
-
-            try {
-
-                Picasso.get().load(productIcon).placeholder(R.drawable.ic_add_shopping_white).into(productIconIv);
-            }
-            catch (Exception e){
-                productIconIv.setImageResource(R.drawable.ic_add_shopping_white);
-            }
-
         }
 
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-//        reference.child(firebaseAuth.getUid()).child("Products").child(productId)
-//                .addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                        String productId = ""+snapshot.child("productId").getValue();
-//                        String productTitle = ""+snapshot.child("productTitle").getValue();
-//                        String productDescription = ""+snapshot.child("productDescription").getValue();
-//                        String productCategory = ""+snapshot.child("productCategory").getValue();
-//                        String productQuantity = ""+snapshot.child("productQuantity").getValue();
-//                        String productIcon = ""+snapshot.child("productIcon").getValue();
-//                        String originalPrice = ""+snapshot.child("originalPrice").getValue();
-//                        String timestamp = ""+snapshot.child("timestamp").getValue();
-//                        String uid = ""+snapshot.child("uid").getValue();
-//
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//                });
     }
 
 

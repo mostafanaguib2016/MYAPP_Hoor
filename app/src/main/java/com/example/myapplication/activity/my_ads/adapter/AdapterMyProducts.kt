@@ -53,9 +53,9 @@ class AdapterMyProducts(val viewModel: MyAdsViewModel, val context: Context)
             binding.descriptionTv.text = currentItem.productDescription
             binding.originalPriceTv.text = "$ ${currentItem.originalPrice}"
             val ownerId: String = currentItem.userId
-            val orderIcon: String = currentItem.productIconUrl
 
             try {
+                val orderIcon: String = currentItem.productIconUrl!!
                 Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productIconIv)
             } catch (e: Exception) {
                 binding.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
@@ -76,12 +76,12 @@ class AdapterMyProducts(val viewModel: MyAdsViewModel, val context: Context)
 
             }
 
-//            binding.root.setOnClickListener {
-//                val intent = Intent(context, ProductDetailsActivity::class.java)
-//                intent.putExtra("productId", currentItem.productId)
-//                intent.putExtra("navigation", "product")
-//                context.startActivity(intent)
-//            }
+            binding.root.setOnClickListener {
+                val intent = Intent(context, ProductDetailsActivity::class.java)
+                intent.putExtra("productId", currentItem.productId)
+                intent.putExtra("navigation", "product")
+                context.startActivity(intent)
+            }
 
             binding.editBtn.setOnClickListener {
 

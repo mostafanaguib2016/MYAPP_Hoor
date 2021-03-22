@@ -21,6 +21,7 @@ import com.example.myapplication.models.ModelProduct
 import com.example.myapplication.models.OrdersModel
 import com.example.myapplication.util.UserInfo
 import com.google.firebase.firestore.FirebaseFirestore
+import com.squareup.picasso.Picasso
 
 class ProductDetailsActivity : AppCompatActivity() {
 
@@ -191,6 +192,14 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                         if (ownerID != userId)
                             binding.editProduct.visibility = GONE
+
+                        try {
+                            val orderIcon: String = product.productIconUrl!!
+                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productTb.productIconIv)
+                        } catch (e: Exception) {
+                            binding.productTb.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
+                        }
+
                         break
                     }
 
@@ -216,6 +225,13 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                         if (ownerID != userId)
                             binding.editProduct.visibility = GONE
+
+                        try {
+                            val orderIcon: String = order.orderIconUrl!!
+                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productTb.productIconIv)
+                        } catch (e: Exception) {
+                            binding.productTb.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
+                        }
 
                         break
                     }
