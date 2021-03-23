@@ -26,4 +26,8 @@
     <string name="about">نبذه عني</string>
     <string name="category_name">اسم التخصص</string>
     <string name="category_type">نوع التخصص</string>
+    <string name="edit_product">Edit Product</string>
+    <string name="update_product">Update product</string>
+    <string name="update_order">Update order</string>
+    <string name="edit_order">Edit order</string>
 </resources>

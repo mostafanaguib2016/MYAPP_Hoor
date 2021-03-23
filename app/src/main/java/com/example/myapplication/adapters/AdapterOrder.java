@@ -69,6 +69,9 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
         holder.originalPriceTv.setText("$"+originalPrice);
         String ownerId = orderProduct.getUserId();
         String orderIcon = orderProduct.getUserImage();
+        String userName = orderProduct.getUserName();
+
+        holder.userTv.setText(userName);
 
         String userId = new UserInfo(context).getuserId();
 
@@ -94,6 +97,7 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
                 Intent intent = new Intent(context, ProductDetailsActivity.class);
                 intent.putExtra("productId",productId);
                 intent.putExtra("navigation","order");
+                intent.putExtra("userName",userName);
                 context.startActivity(intent);
 
             }
@@ -142,7 +146,7 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
     class HolderProductUser extends RecyclerView.ViewHolder{
 
         private ImageView productIconIv,deleteIv;
-        private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv;
+        private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv,userTv;
 
         public HolderProductUser(@NonNull View itemView) {
             super(itemView);
@@ -153,6 +157,7 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
             addToCartTv = itemView.findViewById(R.id.addToCartTv);
             originalPriceTv = itemView.findViewById(R.id.originalPriceTv);
             deleteIv = itemView.findViewById(R.id.deleteBtn);
+            userTv = itemView.findViewById(R.id.userTv);
         }
     }
 

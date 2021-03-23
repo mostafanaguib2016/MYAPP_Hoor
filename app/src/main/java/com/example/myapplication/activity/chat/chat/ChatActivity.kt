@@ -27,8 +27,10 @@ class ChatActivity: AppCompatActivity()
 
         val ownerId = intent.extras!!.getString("id")!!
         val ownerName = intent.extras!!.getString("ownerName")!!
+        val ownerImage = intent.extras!!.getString("ownerImage")!!
         val userId = intent.extras!!.getString("userId")!!
         val userName = intent.extras!!.getString("userName")
+        val userImage = intent.extras!!.getString("userImage")
 
         Log.e("TAG IDs", "onCreate: $ownerId  $userId")
 
@@ -49,17 +51,25 @@ class ChatActivity: AppCompatActivity()
 
             if (ownerId == UserInfo(this).getuserId())
             {
+                Log.e("ChatAct", "onCreate: $ownerImage \n us " )
+                Log.e("CatAc", "onCreate: $userImage" )
                 msgModel.senderId = ownerId
                 msgModel.senderName = ownerName
+                msgModel.senderImage = ownerImage
                 msgModel.receiverId = userId
                 msgModel.receiverName = userName
+                msgModel.receiverImage = userImage
             }
             else
             {
+                Log.e("ChatAct2", "onCreate: $ownerImage \n $userImage" )
+                Log.e("CatAc", "onCreate: $userImage" )
                 msgModel.senderId = userId
                 msgModel.senderName = userName
+                msgModel.senderImage = userImage
                 msgModel.receiverId = ownerId
                 msgModel.receiverName = ownerName
+                msgModel.receiverImage = ownerImage
             }
 
             msgModel.message = binding.etMessage.text.toString()
@@ -68,7 +78,9 @@ class ChatActivity: AppCompatActivity()
             msgModel.userId = userId
             msgModel.userName = userName
             msgModel.timestamp = timestamp
-            msgModel.userImage = ""
+            msgModel.userImage = userImage
+            msgModel.ownerImage = ownerImage
+
 
             viewModel.addMessage(msgModel)
 

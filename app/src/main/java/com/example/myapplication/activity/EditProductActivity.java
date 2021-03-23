@@ -34,34 +34,24 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.OrdersModel;
 import com.example.myapplication.util.MyUtil;
-import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class EditProductActivity extends AppCompatActivity {
 
     private ImageButton backBtn;
     private ImageView productIconIv;
-    private EditText titleEt,descriptionEt,quantityEt,priceEt;
-    private TextView categoryTv;
+    private EditText titleEt,descriptionEt, timeEt,priceEt;
+    private TextView categoryTv,toolbarHeader;
     private Button updateProductBtn;
     private OrdersModel order ;
     private ModelProduct product;
@@ -93,10 +83,11 @@ public class EditProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_product);
 
         backBtn = findViewById(R.id.backBtn);
+        toolbarHeader = findViewById(R.id.toolbar_header);
         productIconIv = findViewById(R.id.productIconIv);
         titleEt = findViewById(R.id.titleEt);
         descriptionEt = findViewById(R.id.descriptionEt);
-        quantityEt = findViewById(R.id.quantityEt);
+        timeEt = findViewById(R.id.timeEt);
         priceEt = findViewById(R.id.priceEt);
         categoryTv = findViewById(R.id.categoryTv);
         updateProductBtn = findViewById(R.id.updateProductBtn);
@@ -118,6 +109,25 @@ public class EditProductActivity extends AppCompatActivity {
 
         cameraPermissions = new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+
+        if (navigation.equals("order"))
+        {
+            toolbarHeader.setText(R.string.edit_order);
+            updateProductBtn.setText(R.string.update_order);
+            timeEt.setVisibility(VISIBLE);
+            titleEt.setHint(R.string.project_title);
+            categoryTv.setText(R.string.required_jobs);
+
+        }
+        else {
+            toolbarHeader.setText(R.string.edit_product);
+            updateProductBtn.setText(R.string.update_product);
+            timeEt.setVisibility(GONE);
+            titleEt.setHint(R.string.category_name);
+            categoryTv.setText(R.string.category_type);
+
+        }
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,12 +178,12 @@ public class EditProductActivity extends AppCompatActivity {
                             titleEt.setText(order.getOrderTitle());
                             descriptionEt.setText(order.getOrderDescription());
                             categoryTv.setText(order.getOrderCategory());
-                            quantityEt.setText(order.getOrderQuantity());
+                            timeEt.setText(order.getOrderQuantity());
                             priceEt.setText(order.getOriginalPrice());
 
                             try {
                                 String orderIcon = order.getOrderIconUrl();
-                                        Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(productIconIv);
+                                Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(productIconIv);
                             } catch (Exception e) {
                                 productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
                             }
@@ -201,7 +211,7 @@ public class EditProductActivity extends AppCompatActivity {
                         titleEt.setText(product.getProductTitle());
                         descriptionEt.setText(product.getProductDescription());
                         categoryTv.setText(product.getProductCategory());
-                        quantityEt.setText(product.getProductQuantity());
+                        timeEt.setText(product.getProductQuantity());
                         priceEt.setText(product.getOriginalPrice());
 
                         try {
@@ -228,7 +238,7 @@ public class EditProductActivity extends AppCompatActivity {
         productTitle = titleEt.getText().toString().trim();
         productDescription = descriptionEt.getText().toString().trim();
         productCategory = categoryTv.getText().toString().trim();
-        productQuantity = quantityEt.getText().toString().trim();
+        productQuantity = timeEt.getText().toString().trim();
         originalPrice = priceEt.getText().toString().trim();
 
         if (TextUtils.isEmpty(productTitle)){
@@ -379,36 +389,13 @@ public class EditProductActivity extends AppCompatActivity {
 
     private void showImagePickDialog() {
 
-        String[] options = {"Camera", "Gallery"};
+        if (checkStoragePermission()){
+            pickFromGallery();
+        }
+        else {
+            requestStoragePermissions();
+        }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Pick Image")
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0){
-
-                            if (checkCameraPermission()){
-
-                                pickFromCamera();
-                            }
-                            else {
-
-                                requestCameraPermissions();
-                            }
-                        }
-                        else {
-
-                            if (checkStoragePermission()){
-                                pickFromGallery();
-                            }
-                            else {
-                                requestStoragePermissions();
-                            }
-                        }
-                    }
-                })
-                .show();
     }
 
     private void pickFromGallery(){

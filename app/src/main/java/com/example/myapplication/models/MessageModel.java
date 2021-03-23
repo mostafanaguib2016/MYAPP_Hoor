@@ -10,13 +10,40 @@ public class MessageModel
     private String ownerName;
     private String senderId;
     private String senderName;
+    private String senderImage;
     private String receiverId;
     private String receiverName;
+    private String receiverImage;
     private String message;
     private String timestamp;
     private String userImage;
+    private String ownerImage;
+
+    public String getOwnerImage() {
+        return ownerImage;
+    }
+
+    public void setOwnerImage(String ownerImage) {
+        this.ownerImage = ownerImage;
+    }
 
     public MessageModel() {
+    }
+
+    public String getSenderImage() {
+        return senderImage;
+    }
+
+    public void setSenderImage(String senderImage) {
+        this.senderImage = senderImage;
+    }
+
+    public String getReceiverImage() {
+        return receiverImage;
+    }
+
+    public void setReceiverImage(String receiverImage) {
+        this.receiverImage = receiverImage;
     }
 
     public String getOwnerId() {

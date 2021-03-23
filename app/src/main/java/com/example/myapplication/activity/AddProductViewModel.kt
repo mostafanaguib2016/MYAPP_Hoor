@@ -141,6 +141,7 @@ class AddProductViewModel: ViewModel()
                                 "productDescription" to product.productDescription,
                                 "productCategory" to product.productCategory,
                                 "productIcon" to product.productIcon,
+                                "productIconUrl" to product.productIconUrl,
                                 "productQuantity" to product.productQuantity,
                                 "originalPrice" to product.originalPrice
                         )

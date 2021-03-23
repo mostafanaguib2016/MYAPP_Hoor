@@ -48,8 +48,16 @@ class MessageAdapter(val context: Context,val viewModel: MessagesViewModel)
 
         fun bind(currentItem: MessageModel){
 
-            if (currentItem.userImage.isNotEmpty())
-                Picasso.get().load(currentItem.userImage).into(binding.userImg)
+            val userId = UserInfo(context).getuserId()
+
+            if (userId != currentItem.senderId){
+                if (currentItem.senderImage.isNotEmpty())
+                    Picasso.get().load(currentItem.senderImage).into(binding.userImg)
+            }
+            else{
+                if (currentItem.receiverImage.isNotEmpty())
+                    Picasso.get().load(currentItem.receiverImage).into(binding.userImg)
+            }
 
             binding.userName.text = currentItem.receiverName
             binding.message.text = currentItem.message
@@ -77,7 +85,6 @@ class MessageAdapter(val context: Context,val viewModel: MessagesViewModel)
                 viewModel.deleteChat(currentItem.ownerId,currentItem.userId)
                 viewModel.deleteMsgMutableLiveData.observe(context as LifecycleOwner, Observer {
 
-                    val userId = UserInfo(context).getuserId()
 
 
                     viewModel.showMessages(userId)

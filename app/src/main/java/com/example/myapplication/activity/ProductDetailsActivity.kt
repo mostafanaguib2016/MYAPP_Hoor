@@ -39,6 +39,7 @@ class ProductDetailsActivity : AppCompatActivity() {
 
         val productId = intent.extras!!.getString("productId")!!
         val navigation = intent.extras!!.getString("navigation")!!
+        val userName = intent.extras!!.getString("userName")!!
         userInfo = UserInfo(this)
         val userId = userInfo.getuserId()
 
@@ -53,6 +54,7 @@ class ProductDetailsActivity : AppCompatActivity() {
 
         binding.commentsRv.layoutManager = LinearLayoutManager(this)
         binding.commentsRv.adapter = commentsAdapter
+        binding.userTv.text = userName
 
         binding.addCommentBtn.setOnClickListener {
             addComment(productId)
@@ -75,24 +77,30 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                 val userId = UserInfo(this).getuserId()
                 val userName = UserInfo(this).getFullName()
+                val userImage = UserInfo(this).getImage()
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.putExtra("productId", productId)
                 intent.putExtra("id", product.userId)
                 intent.putExtra("ownerName", product.userName)
+                intent.putExtra("ownerImage", product.userImage)
                 intent.putExtra("userId",userId)
                 intent.putExtra("userName",userName)
+                intent.putExtra("userImage",userImage)
 
                 startActivity(intent)
             }
             else if(navigation.equals("order")&& order != null){
                 val userId = UserInfo(this).getuserId()
                 val userName = UserInfo(this).getFullName()
+                val userImage = UserInfo(this).getImage()
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.putExtra("productId", productId)
                 intent.putExtra("id", order.userId)
                 intent.putExtra("ownerName", order.userName)
+                intent.putExtra("ownerImage", order.userImage)
                 intent.putExtra("userId",userId)
                 intent.putExtra("userName",userName)
+                intent.putExtra("userImage",userImage)
                 startActivity(intent)
             }
 
@@ -194,6 +202,7 @@ class ProductDetailsActivity : AppCompatActivity() {
                         binding.titleTv.text = product.productTitle
                         binding.originalPriceTv.text= product.originalPrice
                         binding.descriptionTv.text = product.productDescription
+                        binding.categoryTv.text = product.productCategory
 
                         val ownerID = product.userId
                         val userId = UserInfo(this).getuserId()
@@ -228,6 +237,7 @@ class ProductDetailsActivity : AppCompatActivity() {
                         binding.originalPriceTv.text= order.originalPrice
                         binding.descriptionTv.text = order.orderDescription
                         binding.timeTv.text = order.orderQuantity
+                        binding.categoryTv.text = order.orderCategory
 
                         val ownerID = order.userId
                         val userId = UserInfo(this).getuserId()

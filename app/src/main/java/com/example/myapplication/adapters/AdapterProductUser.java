@@ -70,6 +70,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         String timestamp = modelProduct.getTimestamp();
         String productIcon = modelProduct.getUserImage();
         String ownerId = modelProduct.getUserId();
+        String userName = modelProduct.getUserName();
 
         String userId = new UserInfo(context).getuserId();
 
@@ -79,6 +80,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         holder.titleTv.setText(productTitle);
         holder.descriptionTv.setText(productDescription);
         holder.originalPriceTv.setText("$"+originalPrice);
+        holder.userTv.setText(userName);
 
 
         try {
@@ -96,21 +98,6 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
                 UserInfo info = new UserInfo(context);
 
-//                OrdersModel model = new OrdersModel(
-//                        info.getDeliveryFee(),modelProduct.getUserId(),info.getuserId(),""
-//                        ,"",info.getFullName(),info.getPhone(),info.getShopName()
-//                        ,timestamp,originalPrice,productId,productTitle
-//                );
-//
-//                viewModel.addOrder(model);
-//                viewModel.getAddOrderLiveData().observe((LifecycleOwner) context, new Observer<Task<Void>>() {
-//                    @Override
-//                    public void onChanged(Task<Void> voidTask) {
-//                        if (voidTask.isSuccessful())
-//                            Toast.makeText(context, "Order Added", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +107,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                 Intent intent = new Intent(context, ProductDetailsActivity.class);
                 intent.putExtra("productId",productId);
                 intent.putExtra("navigation","product");
+                intent.putExtra("userName",userName);
                 context.startActivity(intent);
 
             }
@@ -170,7 +158,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
         private ImageView deleteIv;
         private CircleImageView productIconIv;
-        private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv;
+        private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv,userTv;
 
         public HolderProductUser(@NonNull View itemView) {
             super(itemView);
@@ -181,6 +169,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             addToCartTv = itemView.findViewById(R.id.addToCartTv);
             originalPriceTv = itemView.findViewById(R.id.originalPriceTv);
             deleteIv = itemView.findViewById(R.id.deleteBtn);
+            userTv = itemView.findViewById(R.id.userTv);
         }
     }
 

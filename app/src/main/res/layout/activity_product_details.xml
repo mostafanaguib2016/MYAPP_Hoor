@@ -66,13 +66,37 @@
                         android:textSize="@dimen/_13ssp"
                         />
 
+                    <TextView
+                        android:id="@+id/userTv"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Title"
+                        android:textStyle="bold"
+                        android:layout_below="@+id/titleTv"
+                        android:textSize="@dimen/_14ssp"
+                        android:textColor="@color/black"/>
+
+
+
+                    <TextView
+                        android:id="@+id/categoryTv"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Title"
+                        android:textStyle="normal"
+                        android:layout_below="@+id/userTv"
+                        android:textSize="@dimen/_13ssp"
+                        android:textColor="@color/teal_700"/>
+
 
                     <TextView
                         android:id="@+id/descriptionTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="The Product description"
-                        android:layout_below="@+id/titleTv"
+                        android:layout_below="@+id/categoryTv"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13ssp"
                         android:layout_marginTop="@dimen/_10sdp"

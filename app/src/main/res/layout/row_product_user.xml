@@ -35,27 +35,42 @@
                     android:layout_height="wrap_content"
                     android:text="Title"
                     android:textStyle="bold"
+                    android:textSize="@dimen/_14ssp"
                     android:textColor="@color/purple_700"/>
+
+                <TextView
+                    android:id="@+id/userTv"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:layout_below="@+id/titleTv"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/_14ssp"
+                    android:textColor="@color/black"/>
 
                 <TextView
                     android:id="@+id/descriptionTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:text="The Product description"
-                    android:minLines="2"
-                    android:maxLines="2"
-                    android:layout_below="@+id/titleTv"
+                    android:layout_below="@+id/userTv"
+                    android:textSize="@dimen/_13ssp"
                     android:textColor="@color/black"/>
 
                 <TextView
                     android:id="@+id/addToCartTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:text="Add To Cart"
                     android:drawableStart="@drawable/ic_add_shopping_primary"
                     android:gravity="center_vertical"
                     android:layout_below="@+id/descriptionTv"
-                    android:textColor="@color/purple_700"/>
+                    android:textColor="@color/purple_700"
+
+                    />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -68,7 +83,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$20"
-                        android:textColor="@color/teal_700"/>
+                        android:textColor="@color/teal_700"
+                        android:textSize="@dimen/_12ssp"
+                        android:layout_margin="@dimen/_5sdp"
+                        />
                 </RelativeLayout>
 
             </RelativeLayout>
