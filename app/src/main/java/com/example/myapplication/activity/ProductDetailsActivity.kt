@@ -123,6 +123,27 @@ class ProductDetailsActivity : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        val productId = intent.extras!!.getString("productId")!!
+        val navigation = intent.extras!!.getString("navigation")!!
+        val userName = intent.extras!!.getString("userName")!!
+
+        getProduct(productId, navigation)
+        commentsAdapter = CommentsAdapter()
+
+        getComments(productId)
+
+        product = ModelProduct()
+        order = OrdersModel()
+
+        binding.commentsRv.layoutManager = LinearLayoutManager(this)
+        binding.commentsRv.adapter = commentsAdapter
+        binding.userTv.text = userName
+
+    }
+
     fun addComment(productId: String){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

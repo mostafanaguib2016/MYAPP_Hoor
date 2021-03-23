@@ -80,6 +80,7 @@ class AdapterMyProducts(val viewModel: MyAdsViewModel, val context: Context)
                 val intent = Intent(context, ProductDetailsActivity::class.java)
                 intent.putExtra("productId", currentItem.productId)
                 intent.putExtra("navigation", "product")
+                intent.putExtra("userName",currentItem.userName)
                 context.startActivity(intent)
             }
 
