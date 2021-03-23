@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.models.UserModel
 import com.example.myapplication.util.MyUtil
+import com.example.myapplication.util.UserInfo
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +20,7 @@ class RegisterViewModel: ViewModel()
     val signUpMutableLiveData = MutableLiveData<Task<AuthResult>>()
     val userInfoMutableLiveData = MutableLiveData<Task<Void>>()
     val usersMutableLiveData = MutableLiveData<List<UserModel>>()
+    var updateUserLiveData = MutableLiveData<Task<Void>>()
 
     private val mStorageRefUser = FirebaseStorage.getInstance().getReference("profile_images")
 
@@ -27,12 +29,12 @@ class RegisterViewModel: ViewModel()
 
     fun signUp(email: String, password: String) {
 
-        Log.e("TAG", "signUp: " )
+        Log.e("TAG", "signUp: ")
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     signUpMutableLiveData.value = task
-                    Log.e("TAG", "signUp: Complete" )
+                    Log.e("TAG", "signUp: Complete")
                 }
     }
 
@@ -75,11 +77,63 @@ class RegisterViewModel: ViewModel()
 
     }
 
+    fun updatePhoto(image_uri: String, userId: String,userInfo: UserInfo){
+
+        val imageName = MyUtil.getRandomName() + ".jpg"
+        val file: Uri = Uri.fromFile(File(image_uri))
+
+        if (image_uri.isNotEmpty()){
+            mStorageRefUser.child(imageName).putFile(file)
+                    .continueWithTask {
+                        mStorageRefUser.child(imageName).downloadUrl
+                    }.addOnSuccessListener {
+
+                        val hashMap = hashMapOf<String, Any>(
+                                "profileImage" to it.toString())
+
+                        val image = it.toString()
+
+                        db.collection("users").document(userId)
+                                .update(hashMap).addOnCompleteListener {
+                                    updateUserLiveData.value = it
+
+                                    if (it.isSuccessful){
+
+                                        userInfo.updatePhoto(image)
+
+                                    }
+
+                                }
+
+                    }
+        }
+        else{
+            val hashMap = hashMapOf<String, Any>(
+                    "profileImage" to "")
+
+            db.collection("users").document(userId)
+                    .update(hashMap).addOnCompleteListener {
+                        updateUserLiveData.value = it
+
+                        if (it.isSuccessful){
+
+                            userInfo.updatePhoto("")
+
+                        }
+
+
+                    }
+
+        }
+
+
+    }
+
     fun sendData(userRequest: UserModel) {
         val id = db.collection("users").document().id
         userRequest.id = id
 
-        Log.e("TAG ID", "sendData: $id" )
+        Log.e("TAG ID", "sendData: $id")
 
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { t ->
 
@@ -90,7 +144,7 @@ class RegisterViewModel: ViewModel()
 
                         userInfoMutableLiveData.value = it
                     }.addOnFailureListener {
-                        Log.e("TAG", "sendData: ${it.localizedMessage}", )
+                        Log.e("TAG", "sendData: ${it.localizedMessage}")
                     }
         }
     }

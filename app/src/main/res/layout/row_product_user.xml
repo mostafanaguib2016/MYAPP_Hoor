@@ -12,14 +12,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/productIconIv"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="5dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_add_shopping_primary"/>
 
             <RelativeLayout

@@ -19,4 +19,11 @@
     <string name="add_order">Add Order</string>
     <string name="add_product">Add Product</string>
     <string name="should_accept_premission">You should accept permission</string>
+    <string name="project_title">عنوان المشروع</string>
+    <string name="required_jobs">المهن المطلوبة لإنجاز المشروع</string>
+    <string name="required_period">المدة المحددة لإنجاز المشروع</string>
+    <string name="price_range">متراوح اسعار الخدمة</string>
+    <string name="about">نبذه عني</string>
+    <string name="category_name">اسم التخصص</string>
+    <string name="category_type">نوع التخصص</string>
 </resources>

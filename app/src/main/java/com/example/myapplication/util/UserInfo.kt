@@ -73,6 +73,13 @@ class UserInfo(var context: Context) {
 
     }
 
+    fun updatePhoto(image: String){
+
+        editor.putString("image", image)
+        editor.commit()
+
+    }
+
     fun getuserId(): String {
 
         return sharedPreferences.getString("id", "")!!

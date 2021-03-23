@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/add_product"
+            android:text="Add Product"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:hint="@string/project_title"
+            android:hint="@string/category_name"
             android:background="@drawable/shapre_rect02"
             android:drawableStart="@drawable/ic_title_gray"
             android:drawablePadding="10dp"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:drawableEnd="@drawable/ic_down_gray"
-            android:hint="@string/required_jobs"
+            android:hint="@string/category_type"
             android:background="@drawable/shapre_rect02"
             android:drawableStart="@drawable/ic_category_gray"
             android:drawablePadding="10dp"
@@ -73,19 +73,6 @@
             android:padding="10dp"
             android:layout_below="@id/titleEt"/>
 
-
-        <EditText
-            android:id="@+id/timeEt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="@drawable/shapre_rect02"
-            android:drawableStart="@drawable/ic_cart_gray"
-            android:hint="@string/required_period"
-            android:drawablePadding="10dp"
-            android:inputType="numberDecimal"
-            android:padding="10dp"
-            android:layout_below="@id/categoryTv"/>
 
         <EditText
             android:id="@+id/priceEt"
@@ -98,7 +85,7 @@
             android:drawablePadding="10dp"
             android:inputType="numberDecimal"
             android:padding="10dp"
-            android:layout_below="@id/timeEt"/>
+            android:layout_below="@id/categoryTv"/>
 
 
         <EditText
@@ -116,7 +103,7 @@
 
         <Button
             android:id="@+id/addProductBtn"
-            android:text="@string/add_product"
+            android:text="Add Product"
             android:layout_below="@id/descriptionEt"
             android:layout_centerHorizontal="true"
             style="@style/Widget.AppCompat.Button.Colored"

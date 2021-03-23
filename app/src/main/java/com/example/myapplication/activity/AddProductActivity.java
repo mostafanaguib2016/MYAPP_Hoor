@@ -38,11 +38,14 @@ import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class AddProductActivity extends AppCompatActivity {
 
     private ImageButton backBtn;
     private ImageView productIconIv;
-    private EditText titleEt,descriptionEt,quantityEt,priceEt;
+    private EditText titleEt,descriptionEt, timeEt,priceEt;
     private TextView categoryTv,toolbarHeader;
     private Button addProductBtn;
 
@@ -74,7 +77,7 @@ public class AddProductActivity extends AppCompatActivity {
         productIconIv = findViewById(R.id.productIconIv);
         titleEt = findViewById(R.id.titleEt);
         descriptionEt = findViewById(R.id.descriptionEt);
-        quantityEt = findViewById(R.id.quantityEt);
+        timeEt = findViewById(R.id.timeEt);
         priceEt = findViewById(R.id.priceEt);
         categoryTv = findViewById(R.id.categoryTv);
         addProductBtn = findViewById(R.id.addProductBtn);
@@ -97,10 +100,19 @@ public class AddProductActivity extends AppCompatActivity {
         {
             toolbarHeader.setText(R.string.add_order);
             addProductBtn.setText(R.string.add_order);
+            timeEt.setVisibility(VISIBLE);
+
+            titleEt.setHint(R.string.project_title);
+            categoryTv.setText(R.string.required_jobs);
+
         }
         else {
             toolbarHeader.setText(R.string.add_product);
             addProductBtn.setText(R.string.add_product);
+            timeEt.setVisibility(GONE);
+            titleEt.setHint(R.string.category_name);
+            categoryTv.setText(R.string.category_type);
+
         }
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +156,7 @@ public class AddProductActivity extends AppCompatActivity {
                         productTitle = titleEt.getText().toString().trim();
                         productDescription = descriptionEt.getText().toString().trim();
                         productCategory = categoryTv.getText().toString().trim();
-                        productQuantity = quantityEt.getText().toString().trim();
+                        productQuantity = timeEt.getText().toString().trim();
                         originalPrice = priceEt.getText().toString().trim();
 
 
@@ -182,7 +194,7 @@ public class AddProductActivity extends AppCompatActivity {
                         productTitle = titleEt.getText().toString().trim();
                         productDescription = descriptionEt.getText().toString().trim();
                         productCategory = categoryTv.getText().toString().trim();
-                        productQuantity = quantityEt.getText().toString().trim();
+                        productQuantity = timeEt.getText().toString().trim();
                         originalPrice = priceEt.getText().toString().trim();
 
 
@@ -234,7 +246,7 @@ public class AddProductActivity extends AppCompatActivity {
         productTitle = titleEt.getText().toString().trim();
         productDescription = descriptionEt.getText().toString().trim();
         productCategory = categoryTv.getText().toString().trim();
-        productQuantity = quantityEt.getText().toString().trim();
+        productQuantity = timeEt.getText().toString().trim();
         originalPrice = priceEt.getText().toString().trim();
 
         if (TextUtils.isEmpty(productTitle)){
@@ -342,7 +354,7 @@ public class AddProductActivity extends AppCompatActivity {
         titleEt.setText("");
         descriptionEt.setText("");
         categoryTv.setText("");
-        quantityEt.setText("");
+        timeEt.setText("");
         priceEt.setText("");
         productIconIv.setImageResource(R.drawable.ic_add_shopping_primary);
         image_uri = null;
@@ -369,34 +381,40 @@ public class AddProductActivity extends AppCompatActivity {
 
         String[] options = {"Camera", "Gallery"};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Pick Image")
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0){
+        if (checkStoragePermission()) {
+            pickFromGallery();
+        } else {
+            requestStoragePermissions();
+        }
 
-                            if (checkCameraPermission()){
-
-                                pickFromCamera();
-                            }
-                            else {
-
-                                requestCameraPermissions();
-                            }
-                        }
-                        else {
-
-                            if (checkStoragePermission()){
-                                pickFromGallery();
-                            }
-                            else {
-                                requestStoragePermissions();
-                            }
-                        }
-                    }
-                })
-                .show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Pick Image")
+//                .setItems(options, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        if (which == 0){
+//
+//                            if (checkCameraPermission()){
+//
+//                                pickFromCamera();
+//                            }
+//                            else {
+//
+//                                requestCameraPermissions();
+//                            }
+//                        }
+//                        else {
+//
+//                            if (checkStoragePermission()){
+//                                pickFromGallery();
+//                            }
+//                            else {
+//                                requestStoragePermissions();
+//                            }
+//                        }
+//                    }
+//                })
+//                .show();
     }
 
     private void pickFromGallery(){

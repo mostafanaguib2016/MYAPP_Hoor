@@ -51,7 +51,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.provider.MediaStore.MediaColumns.DATA;
 
@@ -80,6 +82,7 @@ public class RegisterUserActivity extends AppCompatActivity {
     private String[] storagePermissions;
 
     private Uri image_uri;
+    ArrayList<UserModel> users;
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -291,27 +294,6 @@ public class RegisterUserActivity extends AppCompatActivity {
                 }
             });
 
-
-//            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-//            ref.child(firebaseAuth.getUid()).setValue(hashMap)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//
-//                            progressDialog.dismiss();
-//                            startActivity(new Intent(RegisterUserActivity.this, MainUserActivity.class));
-//                            finish();
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//
-//                            progressDialog.dismiss();
-//                            startActivity(new Intent(RegisterUserActivity.this, MainUserActivity.class));
-//                            finish();
-//                        }
-//                    });
         }
         else {
 
@@ -333,38 +315,6 @@ public class RegisterUserActivity extends AppCompatActivity {
 
                     if (authResultTask.isSuccessful()){
                         Log.e("REG Activity", "onChanged: IF");
-
-//                        viewModel.(userModel);
-//
-//                        viewModel.getUserInfoMutableLiveData().observe(RegisterUserActivity.this
-//                                , new Observer<Task<Void>>() {
-//                                    @Override
-//                                    public void onChanged(Task<Void> voidTask) {
-//                                        if (voidTask.isSuccessful())
-//                                        {
-//                                            Intent intent = new Intent(RegisterUserActivity.this, MainUserActivity.class);
-//                                            progressDialog.dismiss();
-//                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//
-//                                            userInfo.setData(userModel);
-//
-//                                            startActivity(intent);
-//                                        }
-//                                        else {
-//                                            Log.e("REG Activity", "onChanged: error");
-//
-//                                            Log.e("REG Activity", "onChanged: else"
-//                                                    + voidTask.getException().getLocalizedMessage() );
-//
-//                                            progressDialog.dismiss();
-//                                            Toast.makeText(RegisterUserActivity.this, voidTask.getResult().toString()
-//                                                    , Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    }
-//
-//
-//                                });
-
 
                         String filePathAndName = MyUtil.Companion.getRandomName() + ".jpg";
                         Uri uri = Uri.fromFile(new File(String.valueOf(image_uri.getPath())));

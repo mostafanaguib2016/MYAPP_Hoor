@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/add_product"
+            android:text="Add Product"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -116,7 +116,7 @@
 
         <Button
             android:id="@+id/addProductBtn"
-            android:text="@string/add_product"
+            android:text="Add Product"
             android:layout_below="@id/descriptionEt"
             android:layout_centerHorizontal="true"
             style="@style/Widget.AppCompat.Button.Colored"

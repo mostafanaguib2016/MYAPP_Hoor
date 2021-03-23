@@ -2,13 +2,25 @@ package com.example.myapplication.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,6 +38,7 @@ import com.example.myapplication.adapters.AdapterShop;
 import com.example.myapplication.models.ModelProduct;
 import com.example.myapplication.models.ModelShop;
 import com.example.myapplication.models.OrdersModel;
+import com.example.myapplication.util.MyUtil;
 import com.example.myapplication.util.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,22 +62,37 @@ import java.util.HashMap;
 
 public class MainUserActivity extends AppCompatActivity {
 
-    private TextView nameTv, emailTv, phoneTv, tabShopsTv,tabOrdersTv,myAdsTv;
+    private TextView nameTv, emailTv, phoneTv, tabShopsTv, tabOrdersTv, myAdsTv;
     private RelativeLayout shopsRl, ordersRl;
-    private ImageButton logoutBtn,editProfileBtn,addProductBtn,messageBtn;
+    private ImageButton logoutBtn, editProfileBtn, addProductBtn, messageBtn;
     private ImageView profileIv;
-    private RecyclerView shopRv,orderRv;
+    private RecyclerView shopRv, orderRv;
 
     AdapterOrder adapterOrder;
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
 
+    private static final int CAMERA_REQUEST_CODE = 200;
+    private static final int STORAGE_REQUEST_CODE = 300;
+
+    private static final int IMAGE_PICK_GALLERY_CODE = 400;
+    private static final int IMAGE_PICK_CAMERA_CODE = 500;
+
+    private String[] cameraPermissions;
+    ModelProduct product;
+    private String[] storagePermissions;
+
     UserInfo userInfo;
 
     AddProductViewModel viewModel;
+    RegisterViewModel registerViewModel;
 
     private static final int ADD_PRODUCT = 673;
+
+
+    private String image_uri;
+    private Uri uri;
 
     private ArrayList<ModelProduct> shopList;
     private ArrayList<OrdersModel> orderList;
@@ -94,6 +122,10 @@ public class MainUserActivity extends AppCompatActivity {
         messageBtn = findViewById(R.id.messageBtn);
         myAdsTv = findViewById(R.id.myAdsTv);
 
+        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+
         myAdsTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +142,7 @@ public class MainUserActivity extends AppCompatActivity {
         checkUser();
 
         viewModel = new ViewModelProvider(this).get(AddProductViewModel.class);
+        registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
         showShopsUI();
 
@@ -122,7 +155,14 @@ public class MainUserActivity extends AppCompatActivity {
             }
         });
 
+        profileIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                changePhotoDialog();
+
+            }
+        });
 
         messageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,12 +186,12 @@ public class MainUserActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+                Intent intent = new Intent(MainUserActivity.this, AddProductActivity.class);
 
-                intent.putExtra("navigation","product");
+                intent.putExtra("navigation", "product");
 
                 startActivityForResult
-                        (intent,ADD_PRODUCT);
+                        (intent, ADD_PRODUCT);
             }
         });
 
@@ -163,12 +203,12 @@ public class MainUserActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+                        Intent intent = new Intent(MainUserActivity.this, AddProductActivity.class);
 
-                        intent.putExtra("navigation","product");
+                        intent.putExtra("navigation", "product");
 
                         startActivityForResult
-                                (intent,ADD_PRODUCT);
+                                (intent, ADD_PRODUCT);
                     }
                 });
 
@@ -182,12 +222,12 @@ public class MainUserActivity extends AppCompatActivity {
                 addProductBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(MainUserActivity.this,AddProductActivity.class);
+                        Intent intent = new Intent(MainUserActivity.this, AddProductActivity.class);
 
-                        intent.putExtra("navigation","order");
+                        intent.putExtra("navigation", "order");
 
                         startActivityForResult
-                                (intent,ADD_PRODUCT);
+                                (intent, ADD_PRODUCT);
                     }
                 });
 
@@ -224,11 +264,131 @@ public class MainUserActivity extends AppCompatActivity {
     }
 
 
+    private void changePhotoDialog(){
+
+        String[] options = {"Change photo", "Delete photo"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Or Delete ?")
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            showImagePickDialog();
+                        } else {
+                            registerViewModel.updatePhoto("",userInfo.getuserId(),userInfo);
+                            registerViewModel.getUpdateUserLiveData().observe(MainUserActivity.this, new Observer<Task<Void>>() {
+                                @Override
+                                public void onChanged(Task<Void> voidTask) {
+
+                                    if (voidTask.isSuccessful())
+                                        profileIv.setImageResource(R.drawable.ic_person_gray);
+
+                                }
+                            });
+                        }
+                    }
+                })
+                .show();
+
+    }
+
+
+
+    private void showImagePickDialog() {
+        if (checkStoragePermission()) {
+            pickFromGallery();
+        } else {
+            requestStoragePermissions();
+        }
+    }
+
+    private void pickFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
+    }
+
+    private void pickFromCamera() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description");
+
+        uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
+        startActivityForResult(intent, 500);
+
+    }
+
+    private boolean checkStoragePermission() {
+        boolean result = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                (PackageManager.PERMISSION_GRANTED);
+
+        return result;
+    }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE);
+    }
+
+    private boolean checkCameraPermission() {
+        boolean result = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) ==
+                (PackageManager.PERMISSION_GRANTED);
+        boolean result1 = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                (PackageManager.PERMISSION_GRANTED);
+
+        return result && result1;
+    }
+
+    private void requestCameraPermissions() {
+        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (cameraAccepted && storageAccepted) {
+                        pickFromCamera();
+                    } else {
+
+                        Toast.makeText(this, "Camera & Storage Permission are required...", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            break;
+
+            case STORAGE_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    if (storageAccepted) {
+                        pickFromGallery();
+                    } else {
+
+                        Toast.makeText(this, "Storage Permission is necessary...", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            break;
+
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
     private void MakeMeOffline() {
         progressDialog.setMessage("Logging Out...");
 
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("online","false");
+        hashMap.put("online", "false");
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.child(firebaseAuth.getUid()).updateChildren(hashMap)
@@ -245,7 +405,7 @@ public class MainUserActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
 
                         progressDialog.dismiss();
-                        Toast.makeText(MainUserActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainUserActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -253,16 +413,15 @@ public class MainUserActivity extends AppCompatActivity {
 
     private void checkUser() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user == null){
+        if (user == null) {
             startActivity(new Intent(MainUserActivity.this, LoginActivity.class));
             finish();
-        }
-        else {
+        } else {
             loadMyInfo();
         }
     }
 
-    void getOrders(){
+    void getOrders() {
 
         orderList = new ArrayList<>();
 
@@ -273,12 +432,12 @@ public class MainUserActivity extends AppCompatActivity {
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
+                for (DocumentSnapshot snapshot : task.getResult().getDocuments()) {
                     OrdersModel product = snapshot.toObject(OrdersModel.class);
 
                     orderList.add(product);
                 }
-                adapterOrder = new AdapterOrder(MainUserActivity.this, orderList,viewModel);
+                adapterOrder = new AdapterOrder(MainUserActivity.this, orderList, viewModel);
                 orderRv.setAdapter(adapterOrder);
             }
         });
@@ -292,53 +451,15 @@ public class MainUserActivity extends AppCompatActivity {
         phoneTv.setText(userInfo.getPhone());
         try {
             Picasso.get().load(userInfo.getImage()).placeholder(R.drawable.ic_person_gray).into(profileIv);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
             profileIv.setImageResource(R.drawable.ic_person_gray);
         }
 
-        loadShops("");
-
-        /*DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-        ref.orderByChild("uid").equalTo(firebaseAuth.getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            String name = ""+ds.child("name").getValue();
-                            String email = ""+ds.child("email").getValue();
-                            String phone = ""+ds.child("phone").getValue();
-                            String profileImage = ""+ds.child("profileImage").getValue();
-                            String accountType = ""+ds.child("accountType").getValue();
-                            String city = ""+ds.child("city").getValue();
-
-
-
-                            nameTv.setText(name);
-                            emailTv.setText(email);
-                            phoneTv.setText(phone);
-                            try {
-                                Picasso.get().load(profileImage).placeholder(R.drawable.ic_person_gray).into(profileIv);
-                            }
-                            catch (Exception e){
-
-                                profileIv.setImageResource(R.drawable.ic_person_gray);
-                            }
-
-                            loadShops(city);
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });*/
+        loadShops();
     }
 
-    private void loadShops(final String myCity) {
+    private void loadShops() {
 
         shopList = new ArrayList<>();
 
@@ -347,58 +468,65 @@ public class MainUserActivity extends AppCompatActivity {
         reference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot snapshot : task.getResult().getDocuments()){
+                for (DocumentSnapshot snapshot : task.getResult().getDocuments()) {
                     ModelProduct product = snapshot.toObject(ModelProduct.class);
 
                     shopList.add(product);
                 }
-                adapterShop = new AdapterProductUser(MainUserActivity.this, shopList,viewModel);
+                adapterShop = new AdapterProductUser(MainUserActivity.this, shopList, viewModel);
                 adapterShop.setData(shopList);
                 shopRv.setAdapter(adapterShop);
             }
         });
 
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-//        ref.orderByChild("accountType").equalTo("Seller")
-//                .addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                        shopList.clear();
-//                        for (DataSnapshot ds: snapshot.getChildren()){
-//                            ModelShop modelShop = ds.getValue(ModelShop.class);
-//
-//                            String shopCity = ""+ds.child("city").getValue();
-//
-//                            if (shopCity.equals(myCity)){
-//                                shopList.add(modelShop);
-//                            }
-//
-//                        }
-//
-//                        adapterShop = new AdapterShop(MainUserActivity.this, shopList);
-//                        shopRv.setAdapter(adapterShop);
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//                });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode==RESULT_OK){
+        if (resultCode == RESULT_OK) {
 
-            if (requestCode == ADD_PRODUCT){
-                loadShops("");
+            if (requestCode == ADD_PRODUCT) {
+                loadShops();
                 getOrders();
             }
-        }
 
+            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
+
+                try {
+
+                    profileIv.setImageURI(data.getData());
+                    uri = data.getData();
+                    String p = "";
+
+                    Cursor cursor = getContentResolver().query(
+                            uri, null, null, null, null
+                    );
+
+                    if (cursor == null) {
+                        p = uri.getPath().toString();
+                    } else {
+                        cursor.moveToFirst();
+                        int indx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                        p = cursor.getString(indx);
+                    }
+
+                    image_uri = p;
+
+                    registerViewModel.updatePhoto(image_uri,userInfo.getuserId(),userInfo);
+
+
+                } catch (Exception e) {
+
+                    profileIv.setImageBitmap((Bitmap) data.getExtras().get("data"));
+
+                    image_uri = MyUtil.Companion.bitMapToString((Bitmap) data.getExtras().get("data"));
+                }
+
+
+            }
+
+        }
     }
 }

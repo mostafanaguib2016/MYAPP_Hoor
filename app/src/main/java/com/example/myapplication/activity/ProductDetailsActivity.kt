@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
@@ -50,15 +51,22 @@ class ProductDetailsActivity : AppCompatActivity() {
         product = ModelProduct()
         order = OrdersModel()
 
-        binding.productTb.addToCartTv.visibility = GONE
-        binding.productTb.deleteBtn.visibility = GONE
-
         binding.commentsRv.layoutManager = LinearLayoutManager(this)
         binding.commentsRv.adapter = commentsAdapter
 
         binding.addCommentBtn.setOnClickListener {
             addComment(productId)
         }
+
+        if (navigation == "product")
+        {
+            binding.timeTv.visibility = GONE
+        }
+        else
+        {
+            binding.timeTv.visibility = VISIBLE
+        }
+
 
         binding.sendMsg.setOnClickListener {
 
@@ -183,9 +191,9 @@ class ProductDetailsActivity : AppCompatActivity() {
                         if (userInfo.getuserId() == product.userId)
                             binding.sendMsg.visibility = GONE
 
-                        binding.productTb.titleTv.text = product.productTitle
-                        binding.productTb.originalPriceTv.text= product.originalPrice
-                        binding.productTb.descriptionTv.text = product.productDescription
+                        binding.titleTv.text = product.productTitle
+                        binding.originalPriceTv.text= product.originalPrice
+                        binding.descriptionTv.text = product.productDescription
 
                         val ownerID = product.userId
                         val userId = UserInfo(this).getuserId()
@@ -195,9 +203,9 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                         try {
                             val orderIcon: String = product.productIconUrl!!
-                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productTb.productIconIv)
+                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productIconIv)
                         } catch (e: Exception) {
-                            binding.productTb.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
+                            binding.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
                         }
 
                         break
@@ -216,9 +224,10 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                     if (order.orderId.equals(productId))
                     {
-                        binding.productTb.titleTv.text = order.orderTitle
-                        binding.productTb.originalPriceTv.text= order.originalPrice
-                        binding.productTb.descriptionTv.text = order.orderDescription
+                        binding.titleTv.text = order.orderTitle
+                        binding.originalPriceTv.text= order.originalPrice
+                        binding.descriptionTv.text = order.orderDescription
+                        binding.timeTv.text = order.orderQuantity
 
                         val ownerID = order.userId
                         val userId = UserInfo(this).getuserId()
@@ -228,9 +237,9 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                         try {
                             val orderIcon: String = order.orderIconUrl!!
-                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productTb.productIconIv)
+                            Picasso.get().load(orderIcon).placeholder(R.drawable.ic_add_shopping_primary).into(binding.productIconIv)
                         } catch (e: Exception) {
-                            binding.productTb.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
+                            binding.productIconIv.setImageResource(R.drawable.ic_add_shopping_primary)
                         }
 
                         break

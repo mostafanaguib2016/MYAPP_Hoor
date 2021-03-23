@@ -68,7 +68,7 @@ public class AdapterOrder extends RecyclerView.Adapter<AdapterOrder.HolderProduc
         holder.descriptionTv.setText(productTitle);
         holder.originalPriceTv.setText("$"+originalPrice);
         String ownerId = orderProduct.getUserId();
-        String orderIcon = orderProduct.getOrderIconUrl();
+        String orderIcon = orderProduct.getUserImage();
 
         String userId = new UserInfo(context).getuserId();
 

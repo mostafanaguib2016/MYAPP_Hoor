@@ -32,6 +32,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.HolderProductUser> implements Filterable {
 
     private Context context;
@@ -66,7 +68,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         String productQuantity = modelProduct.getProductQuantity();
         String productId = modelProduct.getProductId();
         String timestamp = modelProduct.getTimestamp();
-        String productIcon = modelProduct.getProductIconUrl();
+        String productIcon = modelProduct.getUserImage();
         String ownerId = modelProduct.getUserId();
 
         String userId = new UserInfo(context).getuserId();
@@ -166,7 +168,8 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
     class HolderProductUser extends RecyclerView.ViewHolder{
 
-        private ImageView productIconIv,deleteIv;
+        private ImageView deleteIv;
+        private CircleImageView productIconIv;
         private TextView titleTv,descriptionTv,addToCartTv,originalPriceTv;
 
         public HolderProductUser(@NonNull View itemView) {

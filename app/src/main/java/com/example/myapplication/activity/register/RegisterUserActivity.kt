@@ -308,24 +308,31 @@ class RegisterUserActivity: AppCompatActivity()
 
     private fun showImagePickDialog() {
         val options = arrayOf("Camera", "Gallery")
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Pick Image")
-                .setItems(options) { dialog, which ->
-                    if (which == 0) {
-                        if (checkCameraPermission()) {
-                            pickFromCamera()
-                        } else {
-                            requestCameraPermissions()
-                        }
-                    } else {
-                        if (checkStoragePermission()) {
-                            pickFromGallery()
-                        } else {
-                            requestStoragePermissions()
-                        }
-                    }
-                }
-                .show()
+
+        if (checkStoragePermission()) {
+            pickFromGallery()
+        } else {
+            requestStoragePermissions()
+        }
+
+//        val builder = AlertDialog.Builder(this)
+//        builder.setTitle("Pick Image")
+//                .setItems(options) { dialog, which ->
+//                    if (which == 0) {
+//                        if (checkCameraPermission()) {
+//                            pickFromCamera()
+//                        } else {
+//                            requestCameraPermissions()
+//                        }
+//                    } else {
+//                        if (checkStoragePermission()) {
+//                            pickFromGallery()
+//                        } else {
+//                            requestStoragePermissions()
+//                        }
+//                    }
+//                }
+//                .show()
     }
 
     private fun pickFromGallery() {

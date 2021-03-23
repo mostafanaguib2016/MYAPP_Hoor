@@ -263,7 +263,7 @@ public class EditProductActivity extends AppCompatActivity {
 
                 product = new  ModelProduct(
                         productTitle,productDescription,productCategory
-                        ,productQuantity,"",originalPrice,"","",""
+                        ,productQuantity,"",originalPrice,"","","",""
                 );
 
                 viewModel.updateProduct(productId,product);
@@ -313,7 +313,7 @@ public class EditProductActivity extends AppCompatActivity {
 
                 product = new  ModelProduct(
                         productTitle,productDescription,productCategory
-                        ,productQuantity,image_uri,originalPrice,"","",""
+                        ,productQuantity,image_uri,originalPrice,"","","",""
                 );
 
                 viewModel.updateProduct(productId,product);
