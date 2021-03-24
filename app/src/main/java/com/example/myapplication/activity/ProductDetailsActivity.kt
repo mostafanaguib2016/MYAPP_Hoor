@@ -260,6 +260,10 @@ class ProductDetailsActivity : AppCompatActivity() {
                         binding.timeTv.text = order.orderQuantity
                         binding.categoryTv.text = order.orderCategory
 
+                        if (userInfo.getuserId() == order.userId)
+                            binding.sendMsg.visibility = GONE
+
+
                         val ownerID = order.userId
                         val userId = UserInfo(this).getuserId()
 

@@ -79,6 +79,8 @@ class AdapterMyOrders(val viewModel: MyAdsViewModel, val context: Context)
                 val intent = Intent(context, ProductDetailsActivity::class.java)
                 intent.putExtra("productId", currentItem.orderId)
                 intent.putExtra("navigation", "order")
+                intent.putExtra("userName",currentItem.userName)
+
                 context.startActivity(intent)
             }
 

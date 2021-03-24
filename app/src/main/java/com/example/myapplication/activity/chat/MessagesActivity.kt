@@ -49,11 +49,15 @@ class MessagesActivity: AppCompatActivity()
             if (it.isNotEmpty()) {
                 val size = it.size
 
+                Log.e("$TAG ss", "onCreate: $size" )
+
                 list.add(it[0])
                 for (i in 1 until size) {
-                    Log.e(TAG, "onCreate: i  $i" )
-                    if (it[i - 1].userId != it[i].userId)
+                    Log.e(TAG, "onCreate: i  ${it[i-1].userId}")
+                    if (it[i - 1].receiverId != it[i].receiverId) {
+                        Log.e(TAG, "onCreate: i  ${it.toString()}")
                         list.add(it[i])
+                    }
                 }
 
                 adapter.setData(list)

@@ -72,8 +72,10 @@ class MessageAdapter(val context: Context,val viewModel: MessagesViewModel)
                 val bundle = Intent(context,ChatActivity::class.java)
                 bundle.putExtra("id",ownerId)
                 bundle.putExtra("ownerName",currentItem.ownerName)
+                bundle.putExtra("ownerImage",currentItem.ownerImage)
                 bundle.putExtra("userId",userId)
                 bundle.putExtra("userName",userName)
+                bundle.putExtra("userImage",currentItem.userImage)
 
 
 
