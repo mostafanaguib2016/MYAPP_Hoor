@@ -52,17 +52,17 @@ class MessagesActivity: AppCompatActivity()
                 Log.e("$TAG ss", "onCreate: $size" )
                 list = ArrayList()
 
+                list.add(it[0])
 
-                for (i in 0..size) {
+                for (i in 1..size) {
 
-                    if (it[i + 1].receiverId != it[i].receiverId) {
+                    if (it[i + 1].userId != it[i].userId || it[i+1].ownerId != it[i].ownerId) {
                         Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
                         list.add(it[i])
                     }
                 }
 
                 adapter.setData(list)
-                Log.e("MESSAGES s", "${list[list.size - 1].toString()}    ")
 
             } else {
                 binding.noData.visibility = VISIBLE
@@ -94,16 +94,15 @@ class MessagesActivity: AppCompatActivity()
                 Log.e("$TAG ss", "onCreate: $size" )
                 list = ArrayList()
 
-//                list.add(it[0])
-                for (i in 0..size) {
-                    if (it[i + 1].receiverId != it[i].receiverId ) {
+                list.add(it[0])
+                for (i in 1..size) {
+                    if (it[i + 1].userId != it[i].userId || it[i+1].ownerId != it[i].ownerId) {
                         Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
                         list.add(it[i])
                     }
                 }
 
                 adapter.setData(list)
-                Log.e("MESSAGES s", "${list[list.size - 1].toString()}    ")
 
             } else {
                 binding.noData.visibility = VISIBLE
