@@ -47,15 +47,16 @@ class MessagesActivity: AppCompatActivity()
             list = ArrayList()
 
             if (it.isNotEmpty()) {
-                val size = it.size
+                val size = it.size-2
 
                 Log.e("$TAG ss", "onCreate: $size" )
+                list = ArrayList()
 
-                list.add(it[0])
-                for (i in 1 until size) {
-                    Log.e(TAG, "onCreate: i  ${it[i-1].userId}")
-                    if (it[i - 1].receiverId != it[i].receiverId) {
-                        Log.e(TAG, "onCreate: i  ${it.toString()}")
+
+                for (i in 0..size) {
+
+                    if (it[i + 1].receiverId != it[i].receiverId) {
+                        Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
                         list.add(it[i])
                     }
                 }
@@ -75,6 +76,43 @@ class MessagesActivity: AppCompatActivity()
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        val userId = userInfo.getuserId()
+
+        viewModel.showMessages(userId)
+        viewModel.messageMutableLiveData.observe(this, Observer {
+
+
+            Log.e("TAG", "onCreateMesage: ${it.size}")
+
+            list = ArrayList()
+
+            if (it.isNotEmpty()) {
+                val size = it.size-2
+
+                Log.e("$TAG ss", "onCreate: $size" )
+                list = ArrayList()
+
+//                list.add(it[0])
+                for (i in 0..size) {
+                    if (it[i + 1].receiverId != it[i].receiverId ) {
+                        Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
+                        list.add(it[i])
+                    }
+                }
+
+                adapter.setData(list)
+                Log.e("MESSAGES s", "${list[list.size - 1].toString()}    ")
+
+            } else {
+                binding.noData.visibility = VISIBLE
+            }
+
+        })
+
+
+    }
 
     fun loadMyInfo()
     {
