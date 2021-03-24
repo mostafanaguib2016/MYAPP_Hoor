@@ -37,7 +37,7 @@ class MessagesActivity: AppCompatActivity()
         val userId = userInfo.getuserId()
 
         loadMyInfo()
-//        list = ArrayList()
+        list = ArrayList()
         viewModel.showMessages(userId)
         viewModel.messageMutableLiveData.observe(this, Observer {
 
@@ -47,18 +47,29 @@ class MessagesActivity: AppCompatActivity()
             list = ArrayList()
 
             if (it.isNotEmpty()) {
-                val size = it.size-2
+                val size = it.size - 2
 
-                Log.e("$TAG ss", "onCreate: $size" )
+                Log.e("$TAG ss", "onCreate: $size")
                 list = ArrayList()
 
                 list.add(it[0])
+                for (i in 0..size) {
+                    for (j in 1..size){
 
-                for (i in 1..size) {
+                        if (it[i].userId != userId) {
+                            if (it[i].userId != it[j].userId) {
+                                Log.e(TAG, "onCreate: a")
+                                list.add(it[j])
+                                break
+                            }
+                        } else {
+                            if (it[i].ownerId != it[j].ownerId) {
+                                Log.e(TAG, "onCreate: bb" )
+                                list.add(it[j])
+                                break
+                            }
+                        }
 
-                    if (it[i + 1].userId != it[i].userId || it[i+1].ownerId != it[i].ownerId) {
-                        Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
-                        list.add(it[i])
                     }
                 }
 
@@ -76,7 +87,7 @@ class MessagesActivity: AppCompatActivity()
 
     }
 
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         val userId = userInfo.getuserId()
 
@@ -89,17 +100,16 @@ class MessagesActivity: AppCompatActivity()
             list = ArrayList()
 
             if (it.isNotEmpty()) {
-                val size = it.size-2
+                val size = it.size
 
                 Log.e("$TAG ss", "onCreate: $size" )
                 list = ArrayList()
 
                 list.add(it[0])
-                for (i in 1..size) {
-                    if (it[i + 1].userId != it[i].userId || it[i+1].ownerId != it[i].ownerId) {
-                        Log.e(TAG, "onCreate: i  ${it[i].receiverId}")
+                for (i in 0..size)
+                {
+                    if (it[i+1].userId != it[i].userId)
                         list.add(it[i])
-                    }
                 }
 
                 adapter.setData(list)
@@ -112,7 +122,7 @@ class MessagesActivity: AppCompatActivity()
 
 
     }
-
+*/
     fun loadMyInfo()
     {
 

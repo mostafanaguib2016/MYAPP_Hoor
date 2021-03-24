@@ -45,57 +45,61 @@ class ChatActivity: AppCompatActivity()
 
         binding.btnSend.setOnClickListener {
 
-            val msgModel = MessageModel()
-
-            val timestamp = "" + System.currentTimeMillis()
-
-            if (ownerId == UserInfo(this).getuserId())
+            if (binding.etMessage.text.isNotEmpty())
             {
-                Log.e("ChatAct", "onCreate: $ownerImage \n us " )
-                Log.e("CatAc", "onCreate: $userImage" )
-                msgModel.senderId = ownerId
-                msgModel.senderName = ownerName
-                msgModel.senderImage = ownerImage
-                msgModel.receiverId = userId
-                msgModel.receiverName = userName
-                msgModel.receiverImage = userImage
+                val msgModel = MessageModel()
+
+                val timestamp = "" + System.currentTimeMillis()
+
+                if (ownerId == UserInfo(this).getuserId())
+                {
+                    Log.e("ChatAct", "onCreate: $ownerImage \n us " )
+                    Log.e("CatAc", "onCreate: $userImage" )
+                    msgModel.senderId = ownerId
+                    msgModel.senderName = ownerName
+                    msgModel.senderImage = ownerImage
+                    msgModel.receiverId = userId
+                    msgModel.receiverName = userName
+                    msgModel.receiverImage = userImage
+                }
+                else
+                {
+                    Log.e("ChatAct2", "onCreate: $ownerImage \n $userImage" )
+                    Log.e("CatAc", "onCreate: $userImage" )
+                    msgModel.senderId = userId
+                    msgModel.senderName = userName
+                    msgModel.senderImage = userImage
+                    msgModel.receiverId = ownerId
+                    msgModel.receiverName = ownerName
+                    msgModel.receiverImage = ownerImage
+                }
+
+                msgModel.message = binding.etMessage.text.toString()
+                msgModel.ownerId = ownerId
+                msgModel.ownerName = ownerName
+                msgModel.userId = userId
+                msgModel.userName = userName
+                msgModel.timestamp = timestamp
+                msgModel.userImage = userImage
+                msgModel.ownerImage = ownerImage
+
+
+                viewModel.addMessage(msgModel)
+
+                viewModel.sendMsgMutableLiveData.observe(this, Observer {
+                    if (it.isSuccessful) {
+                        viewModel.showChat(userId, ownerId)
+                        viewModel.messageMutableLiveData.observe(this, Observer {
+                            chatAdapter.setData(it as java.util.ArrayList<MessageModel>)
+                            chatAdapter.notifyDataSetChanged()
+                        })
+                    } else
+                        Log.e("TAG", "onCreate: ${it.toString()}", )
+                })
+
+                binding.etMessage.text.clear()
+
             }
-            else
-            {
-                Log.e("ChatAct2", "onCreate: $ownerImage \n $userImage" )
-                Log.e("CatAc", "onCreate: $userImage" )
-                msgModel.senderId = userId
-                msgModel.senderName = userName
-                msgModel.senderImage = userImage
-                msgModel.receiverId = ownerId
-                msgModel.receiverName = ownerName
-                msgModel.receiverImage = ownerImage
-            }
-
-            msgModel.message = binding.etMessage.text.toString()
-            msgModel.ownerId = ownerId
-            msgModel.ownerName = ownerName
-            msgModel.userId = userId
-            msgModel.userName = userName
-            msgModel.timestamp = timestamp
-            msgModel.userImage = userImage
-            msgModel.ownerImage = ownerImage
-
-
-            viewModel.addMessage(msgModel)
-
-            viewModel.sendMsgMutableLiveData.observe(this, Observer {
-                if (it.isSuccessful) {
-                    viewModel.showChat(userId, ownerId)
-                    viewModel.messageMutableLiveData.observe(this, Observer {
-                        chatAdapter.setData(it as java.util.ArrayList<MessageModel>)
-                        chatAdapter.notifyDataSetChanged()
-                    })
-                } else
-                    Log.e("TAG", "onCreate: ${it.toString()}", )
-            })
-
-            binding.etMessage.text.clear()
 
         }
 
